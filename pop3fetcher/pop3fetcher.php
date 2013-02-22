@@ -209,6 +209,8 @@ function settings($args){
 		}
 		if($_GET['_action']=="edit-prefs"){
 			$this->include_stylesheet('skins/' . $this->skin . '/pop3fetcher.css');
+			$this->include_stylesheet('skins/' . $this->skin . '/hide_save_btn.css');
+			/* AGGIUNGERE CODICE JS PER NASCONDERE SOLO QUESTO PULSANTE SAVE*/
 			$add_account_button = "<div style='padding:0 12px 4px 12px;' class='formbuttons'><input type='button' class='button mainaction' value='" . $this->gettext('add') . "' onclick='document.location.href=\"./?_task=settings&_action=plugin.pop3fetcher&_add=1&_framed=1\"' /></div>";
 			$this->rcmail->output->add_footer($add_account_button);
 		}
