@@ -1,12 +1,26 @@
 <?php
+
 /**
- * TEST PLUGIN
- *
- * SPERIAMO DI IMPARARE IN FRETTA COME FUNZIONANO QUESTI PLUGIN...
+ * Download emails from POP3 accounts and save them in your IMAP account.
  *
  * @version 1.0
- * @author Paolo Moretti
+ * @author Paolo Moretti <morepaolo@gmail.com>
+ *
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
 class pop3fetcher extends rcube_plugin
 {
 	public $config = Array(
@@ -53,10 +67,6 @@ function init(){
 		while($account = $this->rcmail->db->fetch_assoc($ret))
 			$accounts[] = $account;
 		$temparr = array();
-		// QUESTA RIGA SETTA LA CARTELLA SUL SERVER
-		// $this->rcmail->storage_init();
-		// print_r($this->rcmail->storage->set_folder("INBOX"));
-		
 		
 		foreach($accounts as $key => $val){
 			$temparr[$key] = $val['pop3fetcher_email'];
@@ -100,6 +110,7 @@ function init(){
 						$newmsgcount = $Count - $i + 1;
 						//echo "Login OK: Inbox contains [" . $newmsgcount . "] messages<br />";
 					}
+					// These two calls create errors in Roundcube 0.7.2, maybe they are useless also in later versions.... testing...
 					$this->rcmail->get_storage();
 					$this->rcmail->imap_connect();
 					$max_messages_downloaded_x_session=10;
@@ -154,7 +165,6 @@ function init(){
 public function render_page($params){
 	$this->include_stylesheet('skins/default/pop3fetcher.css');
 	return($params);
-
 }
   
 function navigation(){
