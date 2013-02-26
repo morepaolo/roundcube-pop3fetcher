@@ -1,15 +1,16 @@
 <?php
+
 /*
- +-----------------------------------------------------------------------+
- | ./plugins/pop3fetcher/localization/en_US.inc
- |
- | Language file of MyRoundcube Plugins Bundle
- | Copyright (C) 2010-2012, Paolo 'morepaolo' Moretti
- | Licensed under the GNU GPL
- |
- +-----------------------------------------------------------------------+
- | Author: morepaolo@gmail.com - 09/20/2012 20:30:33
- +-----------------------------------------------------------------------+
++-----------------------------------------------------------------------+
+| ./plugins/pop3fetcher/localization/en_US.inc                          | 
+| Language file of roundcube-pop3fetcher plugin							| 
+| Copyright (C) 2010-2013, Paolo 'morepaolo' Moretti					|	
+| Licensed under the GNU GPL											|
+|                                                                       |
++-----------------------------------------------------------------------+
+| Author: Paolo Moretti <morepaolo@gmail.com>            	            |
++-----------------------------------------------------------------------+
+
 */
 
 $labels = array();

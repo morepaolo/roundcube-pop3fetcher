@@ -2,14 +2,13 @@
 
 /*
 +-----------------------------------------------------------------------+
-| language/it_IT/labels.inc                                             |
-|                                                                       |
-| Language file of the RoundCube Webmail client                         |
-| Copyright (C) 2008-2009, RoundQube Dev. - Switzerland                 |
-| Licensed under the GNU GPL                                            |
+| ./plugins/pop3fetcher/localization/it_IT.inc                          | 
+| Language file of roundcube-pop3fetcher plugin							| 
+| Copyright (C) 2010-2013, Paolo 'morepaolo' Moretti					|	
+| Licensed under the GNU GPL											|
 |                                                                       |
 +-----------------------------------------------------------------------+
-| Author: Matteo Bonora <develop@matteobonora.it>                       |
+| Author: Paolo Moretti <morepaolo@gmail.com>            	            |
 +-----------------------------------------------------------------------+
 
 */
