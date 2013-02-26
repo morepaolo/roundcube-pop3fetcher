@@ -155,8 +155,9 @@ function init(){
 						}
 					}
 					POP35::disconnect($c);
-				} else 
+				} else {
 					write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, ERROR ON is_array FOR ".$val['pop3fetcher_email']);
+				}
 			} else {
 				write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, POP35::connectfailed for ".$val['pop3fetcher_email']);
 			}
@@ -249,6 +250,7 @@ function edit_do(){
 	$pop3fetcher_ssl = get_input_value('_pop3fetcher_ssl', RCUBE_INPUT_POST);
 	$pop3fetcher_leaveacopy = get_input_value('_pop3fetcher_leaveacopy', RCUBE_INPUT_POST);
 	$pop3fetcher_provider = get_input_value('_pop3fetcher_provider', RCUBE_INPUT_POST);
+	$pop3fetcher_testconnection = get_input_value('_pop3fetcher_testconnection', RCUBE_INPUT_POST);
 	
 	if($pop3fetcher_leaveacopy=="true"){
 		$pop3fetcher_leaveacopy=true;
@@ -257,7 +259,7 @@ function edit_do(){
 	}
 
 	/* QUA VERIFICO LA CONNESSIONE */
-	if(!$this->test_connection($pop3fetcher_username,$pop3fetcher_password,$pop3fetcher_serveraddress,$pop3fetcher_serverport,$pop3fetcher_ssl)){
+	if($pop3fetcher_testconnection=="true"&&!$this->test_connection($pop3fetcher_username,$pop3fetcher_password,$pop3fetcher_serveraddress,$pop3fetcher_serverport,$pop3fetcher_ssl)){
 		$rcmail->output->add_label(
 			'pop3fetcher.account_unableconnect'
 		);
@@ -402,7 +404,14 @@ function accounts_form_content($email="",$username="",$password="",$server="", $
 	$out .= sprintf("<tr><td valign=\"middle\" colspan=\"3\" class=\"title\"><label for=\"%s\">%s</label>:</td><td>%s</td></tr>\n",
 				$field_id,
 				rep_specialchars_output($this->gettext('account_leaveacopy')),
-				$input_pop3fetcher_leaveacopy->show($leave_a_copy?false:true)); // QUESTA COSA E' STRANA MA FUNZIONA...	
+				$input_pop3fetcher_leaveacopy->show($leave_a_copy?false:true)); // QUESTA COSA E' STRANA MA FUNZIONA...
+				
+	$field_id = 'pop3fetcher_testconnection';
+	$input_pop3fetcher_testconnection = new html_checkbox(array('name' => '_pop3fetcher_testconnection', 'id' => $field_id));
+	$out .= sprintf("<tr><td valign=\"middle\" colspan=\"3\" class=\"title\"><label for=\"%s\">%s</label>:</td><td>%s</td></tr>\n",
+				$field_id,
+				rep_specialchars_output($this->gettext('test_connection_on_save')),
+				$input_pop3fetcher_testconnection->show(false)); // QUESTA COSA E' STRANA MA FUNZIONA...	
 		
 	$out .= "\n</table>";
 	$out .= '<br />' . "\n";
@@ -465,6 +474,7 @@ function add_do(){
 	$pop3fetcher_ssl = get_input_value('_pop3fetcher_ssl', RCUBE_INPUT_POST);
 	$pop3fetcher_leaveacopy = get_input_value('_pop3fetcher_leaveacopy', RCUBE_INPUT_POST);
 	$pop3fetcher_provider = get_input_value('_pop3fetcher_provider', RCUBE_INPUT_POST);
+	$pop3fetcher_testconnection = get_input_value('_pop3fetcher_testconnection', RCUBE_INPUT_POST);
 	
 	if($pop3fetcher_leaveacopy=="true"){
 		$pop3fetcher_leaveacopy=true;
@@ -475,7 +485,7 @@ function add_do(){
 	$user_id = $rcmail->user->data['user_id'];
 
 	/* QUA VERIFICO LA CONNESSIONE */
-	if(!$this->test_connection($pop3fetcher_username,$pop3fetcher_password,$pop3fetcher_serveraddress,$pop3fetcher_serverport,$pop3fetcher_ssl)){
+	if($pop3fetcher_testconnection=="true"&&!$this->test_connection($pop3fetcher_username,$pop3fetcher_password,$pop3fetcher_serveraddress,$pop3fetcher_serverport,$pop3fetcher_ssl)){
 		$rcmail->output->add_label(
 			'pop3fetcher.account_unableconnect'
 		);

@@ -26,6 +26,7 @@ $labels['account_usessl'] = 'Usa SSL';
 $labels['account_leaveacopy'] = 'Lascia una copia dei messaggi sul server';
 $labels['account_unableconnect'] = "Impossibile connettersi all'indirizzo";
 $labels['account_provider'] = 'Provider';
+$labels['test_connection_on_save'] = 'Prova la connessione quando salvi';
 
 /* FROM NOW ON: CHECK */
 $labels['remoteaccounts'] = 'Account IMAP Remoti';

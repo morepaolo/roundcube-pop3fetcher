@@ -26,6 +26,7 @@ $labels['account_usessl'] = 'Use SSL';
 $labels['account_leaveacopy'] = 'Leave a copy of the message on the server';
 $labels['account_unableconnect'] = "Unable to connect to address";
 $labels['account_provider'] = 'Provider';
+$labels['test_connection_on_save'] = 'Test connection on save';
 
 
 /* FROM NOW ON: CHECK */
