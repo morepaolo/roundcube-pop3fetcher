@@ -21,7 +21,8 @@ function pop3fetcher_edit_do(){
 					'_pop3fetcher_serverport': $("#pop3fetcher_serverport").val(),
 					'_pop3fetcher_ssl': $("#pop3fetcher_ssl").val(),
 					'_pop3fetcher_leaveacopy': $("#pop3fetcher_leaveacopy").is(":checked"),
-					'_pop3fetcher_testconnection': $("#pop3fetcher_testconnection").is(":checked")
+					'_pop3fetcher_testconnection': $("#pop3fetcher_testconnection").is(":checked"),
+					'_pop3fetcher_defaultfolder': $("#pop3fetcher_defaultfolder").val()
 	};
 	rcmail.http_post('plugin.pop3fetcher', params);
 }
@@ -49,7 +50,8 @@ function pop3fetcher_add_do(){
 					'_pop3fetcher_serverport': $("#pop3fetcher_serverport").val(),
 					'_pop3fetcher_ssl': $("#pop3fetcher_ssl").val(),
 					'_pop3fetcher_leaveacopy': $("#pop3fetcher_leaveacopy").is(":checked"),
-					'_pop3fetcher_testconnection': $("#pop3fetcher_testconnection").is(":checked")
+					'_pop3fetcher_testconnection': $("#pop3fetcher_testconnection").is(":checked"),
+					'_pop3fetcher_defaultfolder': $("#pop3fetcher_defaultfolder").val()
 	};
 	rcmail.http_post('plugin.pop3fetcher', params);
 }

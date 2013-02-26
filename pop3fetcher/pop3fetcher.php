@@ -3,7 +3,7 @@
 /**
  * Download emails from POP3 accounts and save them in your IMAP account.
  *
- * @version 1.0
+ * @version 1.1
  * @author Paolo Moretti <morepaolo@gmail.com>
  *
  *
@@ -24,7 +24,8 @@
 class pop3fetcher extends rcube_plugin
 {
 	public $config = Array(
-		"max_forwarded_message_size" => 4194304
+		"max_forwarded_message_size" => 4194304,
+		"root_folder_path" => "INBOX"
 	);
 	public $task = 'mail|settings';
     public $time_between_checks = 60;
@@ -128,9 +129,9 @@ function init(){
 									//set_time_limit(20); // 20 seconds per message max
 									$Message = POP35::pRetr($c, $cur_msg_index) or die(print_r($_RESULT)); // <- get the last mail (newest)
 									write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, k=$k  Downloaded a message with UIDL ".$msglist["$cur_msg_index"]);
-									$message_id = $this->rcmail->storage->save_message("INBOX", $Message);
+									$message_id = $this->rcmail->storage->save_message($val['default_folder'], $Message);
 									write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, k=$k Stored a message with UIDL ".$msglist["$cur_msg_index"]);
-									$this->rcmail->storage->unset_flag("$message_id", "SEEN");
+									$this->rcmail->storage->unset_flag("$message_id", "SEEN", $val['default_folder']);
 									if(!($val['pop3fetcher_leaveacopyonserver'])){
 										if(POP35::pDele($c, $cur_msg_index))
 											write_log("test_pop3fetcher.txt", "INTERCEPT: DELETING MESSAGE $cur_msg_index $last_uidl");
@@ -251,6 +252,18 @@ function edit_do(){
 	$pop3fetcher_leaveacopy = get_input_value('_pop3fetcher_leaveacopy', RCUBE_INPUT_POST);
 	$pop3fetcher_provider = get_input_value('_pop3fetcher_provider', RCUBE_INPUT_POST);
 	$pop3fetcher_testconnection = get_input_value('_pop3fetcher_testconnection', RCUBE_INPUT_POST);
+	$pop3fetcher_defaultfolder = get_input_value('_pop3fetcher_defaultfolder', RCUBE_INPUT_POST);
+	
+	
+	//MUST CREATE THE TARGET FOLDER IF IT DOESN'T EXIST
+	$rcmail->imap_connect();
+	// check if the folder exists
+	if($rcmail->imap->folder_exists($pop3fetcher_defaultfolder))
+		write_log("test_pop3fetcher.txt", "INTERCEPT: settings, FOLDER $pop3fetcher_defaultfolder EXISTS");
+	else{
+		$rcmail->imap->create_folder($pop3fetcher_defaultfolder,true);
+		write_log("test_pop3fetcher.txt", "INTERCEPT: settings, FOLDER $pop3fetcher_defaultfolder DOESN'T EXIST, MUST CREATE IT!");
+	}
 	
 	if($pop3fetcher_leaveacopy=="true"){
 		$pop3fetcher_leaveacopy=true;
@@ -267,8 +280,8 @@ function edit_do(){
         $this->rcmail->output->send('plugin');
 	} else {
 		//$pop3fetcher_password = $rcmail->encrypt($pop3fetcher_password);
-		$query = "UPDATE " . get_table_name('pop3fetcher_accounts') . " SET pop3fetcher_email=?, pop3fetcher_username=?, pop3fetcher_password=?, pop3fetcher_serveraddress=?, pop3fetcher_serverport=?, pop3fetcher_SSL=?, pop3fetcher_leaveacopyonserver=?, pop3fetcher_provider=? WHERE pop3fetcher_id=?";
-		$ret = $rcmail->db->query($query, $pop3fetcher_email, $pop3fetcher_username, $pop3fetcher_password, $pop3fetcher_serveraddress, $pop3fetcher_serverport, $pop3fetcher_ssl, $pop3fetcher_leaveacopy, $pop3fetcher_provider, $pop3fetcher_id);
+		$query = "UPDATE " . get_table_name('pop3fetcher_accounts') . " SET pop3fetcher_email=?, pop3fetcher_username=?, pop3fetcher_password=?, pop3fetcher_serveraddress=?, pop3fetcher_serverport=?, pop3fetcher_SSL=?, pop3fetcher_leaveacopyonserver=?, pop3fetcher_provider=?, default_folder=? WHERE pop3fetcher_id=?";
+		$ret = $rcmail->db->query($query, $pop3fetcher_email, $pop3fetcher_username, $pop3fetcher_password, $pop3fetcher_serveraddress, $pop3fetcher_serverport, $pop3fetcher_ssl, $pop3fetcher_leaveacopy, $pop3fetcher_provider, $pop3fetcher_defaultfolder, $pop3fetcher_id);
 		if($ret){
 			$this->rcmail->output->command('plugin.edit_do_ok', Array());
 			$this->rcmail->output->send('plugin');
@@ -298,7 +311,7 @@ function accounts_edit($args){
 	);
 
 	$out  = "<form method='post' action='./?_task=settings&_action=plugin.pop3fetcher&_edit_do=1&_framed=1'>\n";
-	$out .= $this->accounts_form_content($arr['pop3fetcher_email'], $arr['pop3fetcher_username'], $arr['pop3fetcher_password'], $arr['pop3fetcher_serveraddress'], $arr['pop3fetcher_serverport'], $arr['pop3fetcher_ssl'], $arr['pop3fetcher_leaveacopyonserver'], $arr['pop3fetcher_provider']);
+	$out .= $this->accounts_form_content($arr['pop3fetcher_email'], $arr['pop3fetcher_username'], $arr['pop3fetcher_password'], $arr['pop3fetcher_serveraddress'], $arr['pop3fetcher_serverport'], $arr['pop3fetcher_ssl'], $arr['pop3fetcher_leaveacopyonserver'], $arr['pop3fetcher_provider'], $arr['default_folder']);
 	$out .= "<input type='hidden' name='_pop3fetcher_id' id='pop3fetcher_id' value='$pop3fetcher_id' />\n";
 	$out .= "<input class='button mainaction pop3fetcher' id='edit_do' type='button' value ='" . $this->gettext('submit') . "' />";
 	$out .= "<img id='btn_edit_do_loader' src=\"./plugins/pop3fetcher/skins/$this->skin/images/loader.gif\" style=\"display:none;margin-top:4px;\" />";
@@ -326,7 +339,7 @@ function get($pop3fetcher_id=0){
 	return $sql;
 }
 
-function accounts_form_content($email="",$username="",$password="",$server="", $port="", $useSSL='none', $leave_a_copy=false, $provider=""){ 
+function accounts_form_content($email="",$username="",$password="",$server="", $port="", $useSSL='none', $leave_a_copy=true, $provider="", $default_folder=""){ 
 	$rcmail = rcmail::get_instance();
 	
     $this->include_script('pop3fetcher_providers.js');
@@ -405,7 +418,32 @@ function accounts_form_content($email="",$username="",$password="",$server="", $
 				$field_id,
 				rep_specialchars_output($this->gettext('account_leaveacopy')),
 				$input_pop3fetcher_leaveacopy->show($leave_a_copy?false:true)); // QUESTA COSA E' STRANA MA FUNZIONA...
-				
+	
+	// SET TARGET DEFAULT FOLDER
+	$field_id = 'pop3fetcher_defaultfolder';
+	$this->rcmail->imap_connect();
+	// get mailbox list
+	$a_folders = $rcmail->imap->list_folders();
+	$delimiter = $rcmail->imap->get_hierarchy_delimiter();
+	$a_mailboxes = array();
+	$custom_folder_name=$this->config["root_folder_path"].$delimiter.str_replace($delimiter,"_",$email);
+	$found=false;
+	foreach ($a_folders as $ifolder){
+		if($ifolder==$custom_folder_name)
+			$found=true;
+		rcmail_build_folder_tree($a_mailboxes, $ifolder, $delimiter);
+	}
+	$input_folderlist = new html_select(array('name' => '_pop3fetcher_defaultfolder', 'id' => $field_id));
+	rcmail_render_folder_tree_select($a_mailboxes, $field_id, 100, $input_folderlist, false);
+	if(!$found)
+		$input_folderlist->add(str_replace($delimiter,"_",$email), $custom_folder_name);
+	//$input_folderlist->add('create new folder', 'create_new_folder');
+	$out .= sprintf("<tr><td valign=\"middle\" class=\"title\"><label for=\"%s\">%s</label>:</td><td colspan=\"3\">%s</td></tr>\n",
+				$field_id,
+				rep_specialchars_output($this->gettext('account_default_folder')),
+				$input_folderlist->show($default_folder));
+	
+	
 	$field_id = 'pop3fetcher_testconnection';
 	$input_pop3fetcher_testconnection = new html_checkbox(array('name' => '_pop3fetcher_testconnection', 'id' => $field_id));
 	$out .= sprintf("<tr><td valign=\"middle\" colspan=\"3\" class=\"title\"><label for=\"%s\">%s</label>:</td><td>%s</td></tr>\n",
@@ -475,6 +513,7 @@ function add_do(){
 	$pop3fetcher_leaveacopy = get_input_value('_pop3fetcher_leaveacopy', RCUBE_INPUT_POST);
 	$pop3fetcher_provider = get_input_value('_pop3fetcher_provider', RCUBE_INPUT_POST);
 	$pop3fetcher_testconnection = get_input_value('_pop3fetcher_testconnection', RCUBE_INPUT_POST);
+	$$pop3fetcher_defaultfolder = get_input_value('_$pop3fetcher_defaultfolder', RCUBE_INPUT_POST);
 	
 	if($pop3fetcher_leaveacopy=="true"){
 		$pop3fetcher_leaveacopy=true;
@@ -506,7 +545,7 @@ function add_do(){
 		$ret = $rcmail->db->query($query, $user_id, $pop3fetcher_email);
 		$arr = $rcmail->db->fetch_assoc($ret);
 		if(!is_array($arr)){
-			$query = "INSERT INTO " . get_table_name('pop3fetcher_accounts') . "(pop3fetcher_email, pop3fetcher_username, pop3fetcher_password, pop3fetcher_serveraddress, pop3fetcher_serverport, pop3fetcher_ssl, pop3fetcher_leaveacopyonserver, user_id, last_uidl, pop3fetcher_provider) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			$query = "INSERT INTO " . get_table_name('pop3fetcher_accounts') . "(pop3fetcher_email, pop3fetcher_username, pop3fetcher_password, pop3fetcher_serveraddress, pop3fetcher_serverport, pop3fetcher_ssl, pop3fetcher_leaveacopyonserver, user_id, last_uidl, pop3fetcher_provider, default_folder) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			$ret = $rcmail->db->query($query,
 				$pop3fetcher_email,
 				$pop3fetcher_username,
@@ -517,7 +556,8 @@ function add_do(){
 				$pop3fetcher_leaveacopy,
 				$user_id,
 				$last_uidl,
-				$pop3fetcher_provider);
+				$pop3fetcher_provider,
+				$pop3fetcher_defaultfolder);
 
 			if($ret){    
 				$this->rcmail->output->command('plugin.add_do_ok', Array());

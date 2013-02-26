@@ -13,6 +13,7 @@ CREATE TABLE  `roundcube85`.`pop3fetcher_accounts` (
   `last_uidl` varchar(70) DEFAULT NULL,
   `update_lock` tinyint(1) NOT NULL DEFAULT '0',
   `pop3fetcher_provider` varchar(128) DEFAULT NULL,
+  `default_folder` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`pop3fetcher_id`),
   KEY `user_id_fk_accounts` (`user_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;

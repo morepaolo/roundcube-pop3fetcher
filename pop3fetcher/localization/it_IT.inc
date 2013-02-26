@@ -27,6 +27,7 @@ $labels['account_leaveacopy'] = 'Lascia una copia dei messaggi sul server';
 $labels['account_unableconnect'] = "Impossibile connettersi all'indirizzo";
 $labels['account_provider'] = 'Provider';
 $labels['test_connection_on_save'] = 'Prova la connessione quando salvi';
+$labels['account_default_folder'] = 'Cartella predefinita';
 
 /* FROM NOW ON: CHECK */
 $labels['remoteaccounts'] = 'Account IMAP Remoti';
