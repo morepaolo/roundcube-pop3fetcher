@@ -9,6 +9,8 @@ if (window.rcmail){
 }
 
 function pop3fetcher_edit_do(){
+	$(".button.pop3fetcher").hide();
+	$("#btn_edit_do_loader").show();
 	var params = {  '_edit_do': '1',
 					'_pop3fetcher_id': $("#pop3fetcher_id").val(),
 					'_pop3fetcher_email': $("#pop3fetcher_email").val(),
@@ -31,6 +33,8 @@ function pop3fetcher_edit_do_error_connecting(){
 }
 
 function pop3fetcher_add_do(){
+	$(".button.pop3fetcher").hide();
+	$("#btn_add_do_loader").show();
 	var params = {  '_add_do': '1',
 					'_pop3fetcher_id': $("#pop3fetcher_id").val(),
 					'_pop3fetcher_email': $("#pop3fetcher_email").val(),

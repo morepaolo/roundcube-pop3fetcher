@@ -297,8 +297,9 @@ function accounts_edit($args){
 	$out  = "<form method='post' action='./?_task=settings&_action=plugin.pop3fetcher&_edit_do=1&_framed=1'>\n";
 	$out .= $this->accounts_form_content($arr['pop3fetcher_email'], $arr['pop3fetcher_username'], $arr['pop3fetcher_password'], $arr['pop3fetcher_serveraddress'], $arr['pop3fetcher_serverport'], $arr['pop3fetcher_ssl'], $arr['pop3fetcher_leaveacopyonserver']);
 	$out .= "<input type='hidden' name='_pop3fetcher_id' id='pop3fetcher_id' value='$pop3fetcher_id' />\n";
-	$out .= "<input class='button mainaction' id='edit_do' type='button' value ='" . $this->gettext('submit') . "' />";
-	$out .= "<span>&nbsp;</span><input type='button' class='button' value='" . $this->gettext('back') . "' onclick='document.location.href=\"./?_task=settings&_action=edit-prefs&_section=pop3fetcher&_framed=1\"' />\n";
+	$out .= "<input class='button mainaction pop3fetcher' id='edit_do' type='button' value ='" . $this->gettext('submit') . "' />";
+	$out .= "<img id='btn_edit_do_loader' src=\"./plugins/pop3fetcher/skins/$this->skin/images/loader.gif\" style=\"display:none;margin-top:4px;\" />";
+	$out .= "<span>&nbsp;</span><input type='button' class='button pop3fetcher' value='" . $this->gettext('back') . "' onclick='document.location.href=\"./?_task=settings&_action=edit-prefs&_section=pop3fetcher&_framed=1\"' />\n";
 	$out .= "</form>\n";
 	$out .= "<script type='text/javascript'>
 			$('#edit_do').click(function(){
@@ -425,8 +426,9 @@ function accounts_add($args){
 	$out .= $this->accounts_form_content();
 
 	$out .= "<input type='hidden' name='_add' id='add' value=1 />\n";               
-	$out .= "<input class='button mainaction' id='add_do' type='button' value ='" . $this->gettext('submit') . "' />";
-	$out .= "<span>&nbsp;</span><input type='button' class='button' value='" . $this->gettext('back') . "' onclick='document.location.href=\"./?_task=settings&_action=edit-prefs&_section=pop3fetcher&_framed=1\"' />\n";
+	$out .= "<input class='button mainaction pop3fetcher' id='add_do' type='button' value ='" . $this->gettext('submit') . "' />";
+	$out .= "<span>&nbsp;</span><input type='button' class='button pop3fetcher' value='" . $this->gettext('back') . "' onclick='document.location.href=\"./?_task=settings&_action=edit-prefs&_section=pop3fetcher&_framed=1\"' />\n";
+	$out .= "<img id='btn_add_do_loader' src=\"./plugins/pop3fetcher/skins/$this->skin/images/loader.gif\" style=\"display:none;margin-top:4px;\" />";
 	$out .= "</form>\n";
 	$out .= "<script type='text/javascript'>
 			$('#add_do').click(function(){
