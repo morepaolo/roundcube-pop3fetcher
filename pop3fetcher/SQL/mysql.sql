@@ -1,4 +1,5 @@
-CREATE TABLE IF NOT EXISTS `pop3fetcher_accounts` (
+DROP TABLE IF EXISTS `roundcube85`.`pop3fetcher_accounts`;
+CREATE TABLE  `roundcube85`.`pop3fetcher_accounts` (
   `pop3fetcher_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `pop3fetcher_email` varchar(128) NOT NULL,
   `pop3fetcher_username` varchar(128) NOT NULL,
@@ -11,6 +12,7 @@ CREATE TABLE IF NOT EXISTS `pop3fetcher_accounts` (
   `last_check` int(10) unsigned NOT NULL DEFAULT '0',
   `last_uidl` varchar(70) DEFAULT NULL,
   `update_lock` tinyint(1) NOT NULL DEFAULT '0',
+  `pop3fetcher_provider` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`pop3fetcher_id`),
   KEY `user_id_fk_accounts` (`user_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=19 ;
+) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
