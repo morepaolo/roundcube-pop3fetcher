@@ -78,83 +78,84 @@ function init(){
 			//print_r($_RESULT);
 			if($c){
 				$s = POP35::pStat($c, false);// or die(print_r($_RESULT));
-				
-				//$Count - total number of messages, $b - total bytes
-				list($Count, $b) = each($s);
+				if(is_array($s)){
+					//$Count - total number of messages, $b - total bytes
+					list($Count, $b) = each($s);
 
-				write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, found new messages: $Count, $b");
-				$msglist = POP35::puidl($c);
-				if(is_array($msglist))
-					$Count=count($msglist);
-				else
-					$Count=0;
+					write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, found new messages: $Count, $b");
+					$msglist = POP35::puidl($c);
+					if(is_array($msglist))
+						$Count=count($msglist);
+					else
+						$Count=0;
 
-				if(sizeof($msglist)>0){
-					$i = 0;					
-					for ($j = 1; $j <= sizeof($msglist); $j++) {
-						//write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, MSG UIDL: ".$msglist["$j"]);
-						//write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, LAST UIDL: ".$last_uidl);
-					   if ($msglist["$j"] == $last_uidl) {
-							$i = $j+1;
-							break;
-					   }
-					}
+					if(sizeof($msglist)>0){
+						$i = 0;					
+						for ($j = 1; $j <= sizeof($msglist); $j++) {
+							//write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, MSG UIDL: ".$msglist["$j"]);
+							//write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, LAST UIDL: ".$last_uidl);
+						   if ($msglist["$j"] == $last_uidl) {
+								$i = $j+1;
+								break;
+						   }
+						}
 
-					if ($Count < $i) {
-						POP35::disconnect($c);
-					}
-					if ($Count == 0) {
-						//echo "Login OK: Inbox EMPTY<br />";
-						POP35::disconnect($c);
-					} else {
-						$newmsgcount = $Count - $i + 1;
-						//echo "Login OK: Inbox contains [" . $newmsgcount . "] messages<br />";
-					}
-					// These two calls create errors in Roundcube 0.7.2, maybe they are useless also in later versions.... testing...
-					$this->rcmail->get_storage();
-					$this->rcmail->imap_connect();
-					$max_messages_downloaded_x_session=10;
-					$max_bytes_downloaded_x_session=1000000;
-					$cur_bytes_downloaded=0;
-					$k=1; 
-					for (; $i < $Count; $i++) {
-						if($k<=$max_messages_downloaded_x_session){
-							$cur_msg_index=$i+1;
-							$l = POP35::pList($c, $cur_msg_index);
-							$last_uidl = $msglist["$cur_msg_index"];
-							if($l["$cur_msg_index"]<=$this->config["max_forwarded_message_size"]||$this->config["max_forwarded_message_size"]==0){
-								$cur_bytes_downloaded=$cur_bytes_downloaded+$l["$i"];
-								write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, k=$k Downloading a message with UIDL ".$msglist["$cur_msg_index"].", SIZE: ".$l["$cur_msg_index"]);
-								//set_time_limit(20); // 20 seconds per message max
-								$Message = POP35::pRetr($c, $cur_msg_index) or die(print_r($_RESULT)); // <- get the last mail (newest)
-								write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, k=$k  Downloaded a message with UIDL ".$msglist["$cur_msg_index"]);
-								$message_id = $this->rcmail->storage->save_message("INBOX", $Message);
-								write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, k=$k Stored a message with UIDL ".$msglist["$cur_msg_index"]);
-								$this->rcmail->storage->unset_flag("$message_id", "SEEN");
-								if(!($val['pop3fetcher_leaveacopyonserver'])){
-									if(POP35::pDele($c, $cur_msg_index))
-										write_log("test_pop3fetcher.txt", "INTERCEPT: DELETING MESSAGE $cur_msg_index $last_uidl");
-									else
-										write_log("test_pop3fetcher.txt", "INTERCEPT: ERROR: CANNOT DELETE $last_uidl");
-								} else {
-									write_log("test_pop3fetcher.txt", "INTERCEPT: leaveacopyonserver IS SET");
-								}
-								if($cur_bytes_downloaded>$max_bytes_downloaded_x_session)
-									$i=$Count+1;
-							} else {
-								write_log("test_pop3fetcher.txt", "INTERCEPT: Skipped message $last_uidl ");
-							}
-							write_log("test_pop3fetcher.txt", "INTERCEPT: trying to update DB: $last_uidl ".$val['pop3fetcher_id']);
-							$query = "UPDATE " . get_table_name('pop3fetcher_accounts') . " SET last_uidl=? WHERE pop3fetcher_id=?";
-							$ret = $this->rcmail->db->query($query, $last_uidl, $val['pop3fetcher_id']);
-							write_log("test_pop3fetcher.txt", "INTERCEPT: updated DB: $last_uidl ".$val['pop3fetcher_id']);
-							$k=$k+1;
+						if ($Count < $i) {
+							POP35::disconnect($c);
+						}
+						if ($Count == 0) {
+							//echo "Login OK: Inbox EMPTY<br />";
+							POP35::disconnect($c);
 						} else {
-							$i=$Count+1;
+							$newmsgcount = $Count - $i + 1;
+							//echo "Login OK: Inbox contains [" . $newmsgcount . "] messages<br />";
+						}
+						// These two calls create errors in Roundcube 0.7.2, maybe they are useless also in later versions.... testing...
+						$this->rcmail->get_storage();
+						$this->rcmail->imap_connect();
+						$max_messages_downloaded_x_session=10;
+						$max_bytes_downloaded_x_session=1000000;
+						$cur_bytes_downloaded=0;
+						$k=1; 
+						for (; $i < $Count; $i++) {
+							if($k<=$max_messages_downloaded_x_session){
+								$cur_msg_index=$i+1;
+								$l = POP35::pList($c, $cur_msg_index);
+								$last_uidl = $msglist["$cur_msg_index"];
+								if($l["$cur_msg_index"]<=$this->config["max_forwarded_message_size"]||$this->config["max_forwarded_message_size"]==0){
+									$cur_bytes_downloaded=$cur_bytes_downloaded+$l["$i"];
+									write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, k=$k Downloading a message with UIDL ".$msglist["$cur_msg_index"].", SIZE: ".$l["$cur_msg_index"]);
+									//set_time_limit(20); // 20 seconds per message max
+									$Message = POP35::pRetr($c, $cur_msg_index) or die(print_r($_RESULT)); // <- get the last mail (newest)
+									write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, k=$k  Downloaded a message with UIDL ".$msglist["$cur_msg_index"]);
+									$message_id = $this->rcmail->storage->save_message("INBOX", $Message);
+									write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, k=$k Stored a message with UIDL ".$msglist["$cur_msg_index"]);
+									$this->rcmail->storage->unset_flag("$message_id", "SEEN");
+									if(!($val['pop3fetcher_leaveacopyonserver'])){
+										if(POP35::pDele($c, $cur_msg_index))
+											write_log("test_pop3fetcher.txt", "INTERCEPT: DELETING MESSAGE $cur_msg_index $last_uidl");
+										else
+											write_log("test_pop3fetcher.txt", "INTERCEPT: ERROR: CANNOT DELETE $last_uidl");
+									} else {
+										write_log("test_pop3fetcher.txt", "INTERCEPT: leaveacopyonserver IS SET");
+									}
+									if($cur_bytes_downloaded>$max_bytes_downloaded_x_session)
+										$i=$Count+1;
+								} else {
+									write_log("test_pop3fetcher.txt", "INTERCEPT: Skipped message $last_uidl ");
+								}
+								write_log("test_pop3fetcher.txt", "INTERCEPT: trying to update DB: $last_uidl ".$val['pop3fetcher_id']);
+								$query = "UPDATE " . get_table_name('pop3fetcher_accounts') . " SET last_uidl=? WHERE pop3fetcher_id=?";
+								$ret = $this->rcmail->db->query($query, $last_uidl, $val['pop3fetcher_id']);
+								write_log("test_pop3fetcher.txt", "INTERCEPT: updated DB: $last_uidl ".$val['pop3fetcher_id']);
+								$k=$k+1;
+							} else {
+								$i=$Count+1;
+							}
 						}
 					}
+					POP35::disconnect($c);
 				}
-				POP35::disconnect($c);
 			} else {
 				write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, POP35::connectfailed for ".$val['pop3fetcher_email']);
 			}
