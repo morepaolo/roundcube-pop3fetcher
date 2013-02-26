@@ -155,7 +155,8 @@ function init(){
 						}
 					}
 					POP35::disconnect($c);
-				}
+				} else 
+					write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, ERROR ON is_array FOR ".$val['pop3fetcher_email']);
 			} else {
 				write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, POP35::connectfailed for ".$val['pop3fetcher_email']);
 			}
@@ -247,6 +248,7 @@ function edit_do(){
 	$pop3fetcher_serverport = get_input_value('_pop3fetcher_serverport', RCUBE_INPUT_POST);
 	$pop3fetcher_ssl = get_input_value('_pop3fetcher_ssl', RCUBE_INPUT_POST);
 	$pop3fetcher_leaveacopy = get_input_value('_pop3fetcher_leaveacopy', RCUBE_INPUT_POST);
+	$pop3fetcher_provider = get_input_value('_pop3fetcher_provider', RCUBE_INPUT_POST);
 	
 	if($pop3fetcher_leaveacopy=="true"){
 		$pop3fetcher_leaveacopy=true;
@@ -263,8 +265,8 @@ function edit_do(){
         $this->rcmail->output->send('plugin');
 	} else {
 		//$pop3fetcher_password = $rcmail->encrypt($pop3fetcher_password);
-		$query = "UPDATE " . get_table_name('pop3fetcher_accounts') . " SET pop3fetcher_email=?, pop3fetcher_username=?, pop3fetcher_password=?, pop3fetcher_serveraddress=?, pop3fetcher_serverport=?, pop3fetcher_SSL=?, pop3fetcher_leaveacopyonserver=? WHERE pop3fetcher_id=?";
-		$ret = $rcmail->db->query($query, $pop3fetcher_email, $pop3fetcher_username, $pop3fetcher_password, $pop3fetcher_serveraddress, $pop3fetcher_serverport, $pop3fetcher_ssl, $pop3fetcher_leaveacopy, $pop3fetcher_id);
+		$query = "UPDATE " . get_table_name('pop3fetcher_accounts') . " SET pop3fetcher_email=?, pop3fetcher_username=?, pop3fetcher_password=?, pop3fetcher_serveraddress=?, pop3fetcher_serverport=?, pop3fetcher_SSL=?, pop3fetcher_leaveacopyonserver=?, pop3fetcher_provider=? WHERE pop3fetcher_id=?";
+		$ret = $rcmail->db->query($query, $pop3fetcher_email, $pop3fetcher_username, $pop3fetcher_password, $pop3fetcher_serveraddress, $pop3fetcher_serverport, $pop3fetcher_ssl, $pop3fetcher_leaveacopy, $pop3fetcher_provider, $pop3fetcher_id);
 		if($ret){
 			$this->rcmail->output->command('plugin.edit_do_ok', Array());
 			$this->rcmail->output->send('plugin');
@@ -281,7 +283,7 @@ function accounts_edit($args){
 	$pop3fetcher_id = get_input_value('_pop3fetcher_id', RCUBE_INPUT_GET);
 
 	$arr = $this->get($pop3fetcher_id);
-
+	
 	// add some labels to client 
 	/**/
 	$rcmail->output->add_label(
@@ -293,9 +295,8 @@ function accounts_edit($args){
 		'accounts.hostempty'
 	);
 
-	//$out  = "<form onsubmit='return accounts_validate()' method='post' action='./?_task=settings&_action=plugin.accounts&_edit_do=1&_framed=1'>\n";
 	$out  = "<form method='post' action='./?_task=settings&_action=plugin.pop3fetcher&_edit_do=1&_framed=1'>\n";
-	$out .= $this->accounts_form_content($arr['pop3fetcher_email'], $arr['pop3fetcher_username'], $arr['pop3fetcher_password'], $arr['pop3fetcher_serveraddress'], $arr['pop3fetcher_serverport'], $arr['pop3fetcher_ssl'], $arr['pop3fetcher_leaveacopyonserver']);
+	$out .= $this->accounts_form_content($arr['pop3fetcher_email'], $arr['pop3fetcher_username'], $arr['pop3fetcher_password'], $arr['pop3fetcher_serveraddress'], $arr['pop3fetcher_serverport'], $arr['pop3fetcher_ssl'], $arr['pop3fetcher_leaveacopyonserver'], $arr['pop3fetcher_provider']);
 	$out .= "<input type='hidden' name='_pop3fetcher_id' id='pop3fetcher_id' value='$pop3fetcher_id' />\n";
 	$out .= "<input class='button mainaction pop3fetcher' id='edit_do' type='button' value ='" . $this->gettext('submit') . "' />";
 	$out .= "<img id='btn_edit_do_loader' src=\"./plugins/pop3fetcher/skins/$this->skin/images/loader.gif\" style=\"display:none;margin-top:4px;\" />";
@@ -323,9 +324,10 @@ function get($pop3fetcher_id=0){
 	return $sql;
 }
 
-function accounts_form_content($email="",$username="",$password="",$server="", $port="", $useSSL='none', $leave_a_copy=false){ 
+function accounts_form_content($email="",$username="",$password="",$server="", $port="", $useSSL='none', $leave_a_copy=false, $provider=""){ 
 	$rcmail = rcmail::get_instance();
-
+	
+    $this->include_script('pop3fetcher_providers.js');
 	// allow the following attributes to be added to the <table> tag
 	$attrib_str = create_attrib_string($attrib, array('style', 'class', 'id', 'cellpadding', 'cellspacing', 'border', 'summary'));
 
@@ -340,6 +342,7 @@ function accounts_form_content($email="",$username="",$password="",$server="", $
 	$out .= '<br />' . "\n";
 	$out .= '<table' . $attrib_str . ">\n";
 
+	//<script type=\"text/javascript\">console.log(providers['gmail.com']);</script>	
 	$field_id = 'pop3fetcher_email';
 	$input_pop3fetcher_email = new html_inputfield(array('autocomplete' => 'off', 'name' => '_pop3fetcher_email', 'id' => $field_id, 'size' => 30));
 	$out .= sprintf("<tr><td valign=\"middle\" class=\"title\"><label for=\"%s\">%s</label>:</td><td colspan=\"3\">%s</td></tr>\n",
@@ -360,6 +363,14 @@ function accounts_form_content($email="",$username="",$password="",$server="", $
 				$field_id,
 				rep_specialchars_output($this->gettext('account_password')),
 				$input_pop3fetcher_password->show($password));	
+				
+	$field_id = 'pop3fetcher_provider';
+	$input_pop3fetcher_provider = new html_select(array('name' => '_pop3fetcher_provider', 'id' => $field_id));
+	$out .= sprintf("<tr><td valign=\"middle\" class=\"title\"><label for=\"%s\">%s</label>:</td><td colspan=\"3\">%s</td></tr>\n",
+				$field_id,
+				rep_specialchars_output($this->gettext('account_provider')),
+				$input_pop3fetcher_provider->show());
+		
 				
 	$field_id = 'pop3fetcher_serveraddress';
 	$input_pop3fetcher_serveraddress = new html_inputfield(array('autocomplete' => 'off', 'name' => '_pop3fetcher_serveraddress', 'id' => $field_id, 'size' => 30));
@@ -396,7 +407,9 @@ function accounts_form_content($email="",$username="",$password="",$server="", $
 	$out .= "\n</table>";
 	$out .= '<br />' . "\n";
 	$out .= "</fieldset>\n";
-
+	$out .= "<script type='text/javascript'>
+				load_pop3_providers('".$provider."');
+			</script>";
 	return $out;  
 }
 
@@ -451,6 +464,7 @@ function add_do(){
 	$pop3fetcher_serverport = get_input_value('_pop3fetcher_serverport', RCUBE_INPUT_POST);
 	$pop3fetcher_ssl = get_input_value('_pop3fetcher_ssl', RCUBE_INPUT_POST);
 	$pop3fetcher_leaveacopy = get_input_value('_pop3fetcher_leaveacopy', RCUBE_INPUT_POST);
+	$pop3fetcher_provider = get_input_value('_pop3fetcher_provider', RCUBE_INPUT_POST);
 	
 	if($pop3fetcher_leaveacopy=="true"){
 		$pop3fetcher_leaveacopy=true;
@@ -482,7 +496,7 @@ function add_do(){
 		$ret = $rcmail->db->query($query, $user_id, $pop3fetcher_email);
 		$arr = $rcmail->db->fetch_assoc($ret);
 		if(!is_array($arr)){
-			$query = "INSERT INTO " . get_table_name('pop3fetcher_accounts') . "(pop3fetcher_email, pop3fetcher_username, pop3fetcher_password, pop3fetcher_serveraddress, pop3fetcher_serverport, pop3fetcher_ssl, pop3fetcher_leaveacopyonserver, user_id, last_uidl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			$query = "INSERT INTO " . get_table_name('pop3fetcher_accounts') . "(pop3fetcher_email, pop3fetcher_username, pop3fetcher_password, pop3fetcher_serveraddress, pop3fetcher_serverport, pop3fetcher_ssl, pop3fetcher_leaveacopyonserver, user_id, last_uidl, pop3fetcher_provider) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			$ret = $rcmail->db->query($query,
 				$pop3fetcher_email,
 				$pop3fetcher_username,
@@ -492,7 +506,8 @@ function add_do(){
 				$pop3fetcher_ssl,
 				$pop3fetcher_leaveacopy,
 				$user_id,
-				$last_uidl);
+				$last_uidl,
+				$pop3fetcher_provider);
 
 			if($ret){    
 				$this->rcmail->output->command('plugin.add_do_ok', Array());

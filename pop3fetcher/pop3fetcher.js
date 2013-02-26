@@ -16,6 +16,7 @@ function pop3fetcher_edit_do(){
 					'_pop3fetcher_email': $("#pop3fetcher_email").val(),
 					'_pop3fetcher_username': $("#pop3fetcher_username").val(),
 					'_pop3fetcher_password': $("#pop3fetcher_password").val(),
+					'_pop3fetcher_provider': $("#pop3fetcher_provider").val(),
 					'_pop3fetcher_serveraddress': $("#pop3fetcher_serveraddress").val(),
 					'_pop3fetcher_serverport': $("#pop3fetcher_serverport").val(),
 					'_pop3fetcher_ssl': $("#pop3fetcher_ssl").val(),
@@ -29,6 +30,8 @@ function pop3fetcher_edit_do_ok(){
 }
 
 function pop3fetcher_edit_do_error_connecting(){
+	$(".button.pop3fetcher").show();
+	$("#btn_edit_do_loader").hide();
 	alert(rcmail.gettext('pop3fetcher.account_unableconnect')+" "+$("#pop3fetcher_serveraddress").val()+":"+$("#pop3fetcher_serverport").val());
 }
 
@@ -40,6 +43,7 @@ function pop3fetcher_add_do(){
 					'_pop3fetcher_email': $("#pop3fetcher_email").val(),
 					'_pop3fetcher_username': $("#pop3fetcher_username").val(),
 					'_pop3fetcher_password': $("#pop3fetcher_password").val(),
+					'_pop3fetcher_provider': $("#pop3fetcher_provider").val(),
 					'_pop3fetcher_serveraddress': $("#pop3fetcher_serveraddress").val(),
 					'_pop3fetcher_serverport': $("#pop3fetcher_serverport").val(),
 					'_pop3fetcher_ssl': $("#pop3fetcher_ssl").val(),
@@ -53,6 +57,8 @@ function pop3fetcher_add_do_ok(){
 }
 
 function pop3fetcher_add_do_error_connecting(){
+	$(".button.pop3fetcher").show();
+	$("#btn_edit_do_loader").hide();
 	alert(rcmail.gettext('pop3fetcher.account_unableconnect')+" "+$("#pop3fetcher_serveraddress").val()+":"+$("#pop3fetcher_serverport").val());
 }
 
@@ -66,4 +72,21 @@ function pop3fetcher_delete_do(element, id){
 
 function pop3fetcher_delete_do_ok(){
 	$(".to_be_removed").remove();
+}
+
+function load_pop3_providers(cur_selected_provider){
+	$.each(providers, function(item){
+		if(item==cur_selected_provider)
+			$("#pop3fetcher_provider").append('<option value="'+item+'" selected>'+item+'</option>');
+		else
+			$("#pop3fetcher_provider").append('<option value="'+item+'">'+item+'</option>');
+	});
+	$("#pop3fetcher_provider").change(
+		function(){
+			
+			$("#pop3fetcher_serveraddress").val(providers[this.value].serveraddress);
+			$("#pop3fetcher_serverport").val(providers[this.value].serverport);
+			$("#pop3fetcher_ssl option[value='"+providers[this.value].ssl+"']").attr("selected", "true");
+		}
+	);
 }

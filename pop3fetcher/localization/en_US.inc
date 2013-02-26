@@ -25,6 +25,7 @@ $labels['account_serverport'] = 'Server Port';
 $labels['account_usessl'] = 'Use SSL';
 $labels['account_leaveacopy'] = 'Leave a copy of the message on the server';
 $labels['account_unableconnect'] = "Unable to connect to address";
+$labels['account_provider'] = 'Provider';
 
 
 /* FROM NOW ON: CHECK */
