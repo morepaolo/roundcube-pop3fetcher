@@ -16,4 +16,6 @@ Finally, edit the main.inc.php file in the config folder, adding the plugin "pop
 
 Now, login into RoundCube, go to the settings panel and add the POP3 accounts as you prefer 
 
-If you have any problem, please don't esitate contacting me at morepaolo@gmail.com
+If you have any problem, please don't esitate contacting me at morepaolo@gmail.com. In order for me to organize emails, please write [roundcube-pop3fetcher] in the subject of the messages.
+
+Thank you!!
