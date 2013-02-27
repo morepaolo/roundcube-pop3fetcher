@@ -7,16 +7,25 @@ Definitely not working in RoundCube 7.2 (due to the usage of rcmail::get_storage
 Pop3fetcher is a plugin for the popular Roundcube IMAP client, which allows Roundcube's users to add POP3 accounts and automatically fetch emails from them
 
 HOW TO INSTALL:
+===============
 
 In order to install the plugin, just copy the folder named "pop3fetcher" in Roundcube's plugins folder.
 
-Then, you'll have to add the table to the database (Mysql version is provided in the SQL folder).
+Then, you'll have to add the table to the database (Mysql version is provided in the SQL folder). Open the SQL/mysql.sql file, replace #REPLACE_WITH_YOUR_DB_NAME# 
+with the correct name (e.g. if your roundcube's database name is "roundcubemail", the query should look like:
+
+DROP TABLE IF EXISTS `roundcubemail`.`pop3fetcher_accounts`;
+CREATE TABLE  `roundcubemail`.`pop3fetcher_accounts` (
+  `pop3fetcher_id` int(10) unsigned NOT N...
+  
+And run the script. (Thanks to Achim Bleichner for this suggestion)
 
 Finally, edit the main.inc.php file in the config folder, adding the plugin "pop3fetcher" at around line 378 (PLUGINS)
 
 Now, login into RoundCube, go to the settings panel and add the POP3 accounts as you prefer 
 
 CHANGELOG:
+==========
 
 1.1
 

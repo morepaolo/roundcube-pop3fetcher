@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `roundcube85`.`pop3fetcher_accounts`;
-CREATE TABLE  `roundcube85`.`pop3fetcher_accounts` (
+DROP TABLE IF EXISTS `#REPLACE_WITH_YOUR_DB_NAME#`.`pop3fetcher_accounts`;
+CREATE TABLE  `#REPLACE_WITH_YOUR_DB_NAME#`.`pop3fetcher_accounts` (
   `pop3fetcher_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `pop3fetcher_email` varchar(128) NOT NULL,
   `pop3fetcher_username` varchar(128) NOT NULL,
