@@ -1,4 +1,4 @@
-roundcube-pop3fetcher v1.1
+roundcube-pop3fetcher v1.2
 ==========================
 
 Tested on RoundCube 8.4, 8.5, 9.0
@@ -27,8 +27,11 @@ Now, login into RoundCube, go to the settings panel and add the POP3 accounts as
 CHANGELOG:
 ==========
 
-1.1
+1.2
+Fixed a bug which didn't allowed to choose the default folder of POP3 account upon creation of the same (the folder was selectable only after the account saved and edited)
+General refactoring of the debug code, adding a config['debug'] parameter to globally control the debug of the application. Remember to set it to false in production environment, because the POP3 logs can grow really fast!
 
+1.1
 Added capability of selecting target IMAP folder, to separate emails fetched from POP3 accounts and other emails separated
 
 

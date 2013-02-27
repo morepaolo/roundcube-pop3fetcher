@@ -3,7 +3,7 @@
 /**
  * Download emails from POP3 accounts and save them in your IMAP account.
  *
- * @version 1.1
+ * @version 1.2
  * @author Paolo Moretti <morepaolo@gmail.com>
  *
  *
@@ -25,7 +25,8 @@ class pop3fetcher extends rcube_plugin
 {
 	public $config = Array(
 		"max_forwarded_message_size" => 4194304,
-		"root_folder_path" => "INBOX"
+		"root_folder_path" => "INBOX",
+		"debug" => false
 	);
 	public $task = 'mail|settings';
     public $time_between_checks = 60;
@@ -71,7 +72,7 @@ function init(){
 		
 		foreach($accounts as $key => $val){
 			$temparr[$key] = $val['pop3fetcher_email'];
-			write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, checkunread for ".$val['pop3fetcher_email']);
+			if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: task mail, checkunread for ".$val['pop3fetcher_email']);
 			// SCARICO I MESSAGGI DAL POP3
 			//print_r($val);
 			$last_uidl = $val['last_uidl'];
@@ -83,7 +84,7 @@ function init(){
 					//$Count - total number of messages, $b - total bytes
 					list($Count, $b) = each($s);
 
-					write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, found new messages: $Count, $b");
+					if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: task mail, found new messages: $Count, $b");
 					$msglist = POP35::puidl($c);
 					if(is_array($msglist))
 						$Count=count($msglist);
@@ -93,8 +94,8 @@ function init(){
 					if(sizeof($msglist)>0){
 						$i = 0;					
 						for ($j = 1; $j <= sizeof($msglist); $j++) {
-							//write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, MSG UIDL: ".$msglist["$j"]);
-							//write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, LAST UIDL: ".$last_uidl);
+							//write_log("pop3fetcher.txt", "INTERCEPT: task mail, MSG UIDL: ".$msglist["$j"]);
+							//write_log("pop3fetcher.txt", "INTERCEPT: task mail, LAST UIDL: ".$last_uidl);
 						   if ($msglist["$j"] == $last_uidl) {
 								$i = $j+1;
 								break;
@@ -125,30 +126,31 @@ function init(){
 								$last_uidl = $msglist["$cur_msg_index"];
 								if($l["$cur_msg_index"]<=$this->config["max_forwarded_message_size"]||$this->config["max_forwarded_message_size"]==0){
 									$cur_bytes_downloaded=$cur_bytes_downloaded+$l["$i"];
-									write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, k=$k Downloading a message with UIDL ".$msglist["$cur_msg_index"].", SIZE: ".$l["$cur_msg_index"]);
+									if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: task mail, k=$k Downloading a message with UIDL ".$msglist["$cur_msg_index"].", SIZE: ".$l["$cur_msg_index"]);
 									//set_time_limit(20); // 20 seconds per message max
 									$Message = POP35::pRetr($c, $cur_msg_index) or die(print_r($_RESULT)); // <- get the last mail (newest)
-									write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, k=$k  Downloaded a message with UIDL ".$msglist["$cur_msg_index"]);
+									if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: task mail, k=$k  Downloaded a message with UIDL ".$msglist["$cur_msg_index"]);
 									$message_id = $this->rcmail->storage->save_message($val['default_folder'], $Message);
-									write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, k=$k Stored a message with UIDL ".$msglist["$cur_msg_index"]);
+									if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: task mail, k=$k Stored a message with UIDL ".$msglist["$cur_msg_index"]);
 									$this->rcmail->storage->unset_flag("$message_id", "SEEN", $val['default_folder']);
 									if(!($val['pop3fetcher_leaveacopyonserver'])){
-										if(POP35::pDele($c, $cur_msg_index))
-											write_log("test_pop3fetcher.txt", "INTERCEPT: DELETING MESSAGE $cur_msg_index $last_uidl");
-										else
-											write_log("test_pop3fetcher.txt", "INTERCEPT: ERROR: CANNOT DELETE $last_uidl");
+										if(POP35::pDele($c, $cur_msg_index)){
+											if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: DELETING MESSAGE $cur_msg_index $last_uidl");
+										} else {
+											if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: ERROR: CANNOT DELETE $last_uidl");
+										}
 									} else {
-										write_log("test_pop3fetcher.txt", "INTERCEPT: leaveacopyonserver IS SET");
+										if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: leaveacopyonserver IS SET");
 									}
 									if($cur_bytes_downloaded>$max_bytes_downloaded_x_session)
 										$i=$Count+1;
 								} else {
-									write_log("test_pop3fetcher.txt", "INTERCEPT: Skipped message $last_uidl ");
+									if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: Skipped message $last_uidl ");
 								}
-								write_log("test_pop3fetcher.txt", "INTERCEPT: trying to update DB: $last_uidl ".$val['pop3fetcher_id']);
+								if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: trying to update DB: $last_uidl ".$val['pop3fetcher_id']);
 								$query = "UPDATE " . get_table_name('pop3fetcher_accounts') . " SET last_uidl=? WHERE pop3fetcher_id=?";
 								$ret = $this->rcmail->db->query($query, $last_uidl, $val['pop3fetcher_id']);
-								write_log("test_pop3fetcher.txt", "INTERCEPT: updated DB: $last_uidl ".$val['pop3fetcher_id']);
+								if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: updated DB: $last_uidl ".$val['pop3fetcher_id']);
 								$k=$k+1;
 							} else {
 								$i=$Count+1;
@@ -157,10 +159,10 @@ function init(){
 					}
 					POP35::disconnect($c);
 				} else {
-					write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, ERROR ON is_array FOR ".$val['pop3fetcher_email']);
+					if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: task mail, ERROR ON is_array FOR ".$val['pop3fetcher_email']);
 				}
 			} else {
-				write_log("test_pop3fetcher.txt", "INTERCEPT: task mail, POP35::connectfailed for ".$val['pop3fetcher_email']);
+				if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: task mail, POP35::connectfailed for ".$val['pop3fetcher_email']);
 			}
 		}
 	} 
@@ -257,12 +259,17 @@ function edit_do(){
 	
 	//MUST CREATE THE TARGET FOLDER IF IT DOESN'T EXIST
 	$rcmail->imap_connect();
+	$delimiter = $rcmail->imap->get_hierarchy_delimiter();
+	
+	if($pop3fetcher_defaultfolder=="#AUTO_FOLDER#")
+		$pop3fetcher_defaultfolder = $this->config["root_folder_path"].$delimiter.str_replace($delimiter,"_",$pop3fetcher_email);
+	
 	// check if the folder exists
-	if($rcmail->imap->folder_exists($pop3fetcher_defaultfolder))
-		write_log("test_pop3fetcher.txt", "INTERCEPT: settings, FOLDER $pop3fetcher_defaultfolder EXISTS");
-	else{
+	if($rcmail->imap->folder_exists($pop3fetcher_defaultfolder)){
+		if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: settings, FOLDER $pop3fetcher_defaultfolder EXISTS");
+	} else{
 		$rcmail->imap->create_folder($pop3fetcher_defaultfolder,true);
-		write_log("test_pop3fetcher.txt", "INTERCEPT: settings, FOLDER $pop3fetcher_defaultfolder DOESN'T EXIST, MUST CREATE IT!");
+		if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: settings, FOLDER $pop3fetcher_defaultfolder DOESN'T EXIST, MUST CREATE IT!");
 	}
 	
 	if($pop3fetcher_leaveacopy=="true"){
@@ -435,8 +442,8 @@ function accounts_form_content($email="",$username="",$password="",$server="", $
 	}
 	$input_folderlist = new html_select(array('name' => '_pop3fetcher_defaultfolder', 'id' => $field_id));
 	rcmail_render_folder_tree_select($a_mailboxes, $field_id, 100, $input_folderlist, false);
-	if(!$found)
-		$input_folderlist->add(str_replace($delimiter,"_",$email), $custom_folder_name);
+	if(!$found && $default_folder!="" && $default_folder!=$custom_folder_name)
+		$input_folderlist->add(str_replace($delimiter,"_",$email), "#AUTO_FOLDER#");
 	//$input_folderlist->add('create new folder', 'create_new_folder');
 	$out .= sprintf("<tr><td valign=\"middle\" class=\"title\"><label for=\"%s\">%s</label>:</td><td colspan=\"3\">%s</td></tr>\n",
 				$field_id,
@@ -455,7 +462,12 @@ function accounts_form_content($email="",$username="",$password="",$server="", $
 	$out .= '<br />' . "\n";
 	$out .= "</fieldset>\n";
 	$out .= "<script type='text/javascript'>
+				var delimiter = '".$delimiter."';
+				var root_folder_path = '".$this->config["root_folder_path"]."';
 				load_pop3_providers('".$provider."');
+				$('#pop3fetcher_email').keyup(
+					function(){update_default_folder_name($(this).val());}
+				);
 			</script>";
 	return $out;  
 }
@@ -513,7 +525,23 @@ function add_do(){
 	$pop3fetcher_leaveacopy = get_input_value('_pop3fetcher_leaveacopy', RCUBE_INPUT_POST);
 	$pop3fetcher_provider = get_input_value('_pop3fetcher_provider', RCUBE_INPUT_POST);
 	$pop3fetcher_testconnection = get_input_value('_pop3fetcher_testconnection', RCUBE_INPUT_POST);
-	$$pop3fetcher_defaultfolder = get_input_value('_$pop3fetcher_defaultfolder', RCUBE_INPUT_POST);
+	$pop3fetcher_defaultfolder = get_input_value('_pop3fetcher_defaultfolder', RCUBE_INPUT_POST);
+	
+	//MUST CREATE THE TARGET FOLDER IF IT DOESN'T EXIST
+	$rcmail->imap_connect();
+	$delimiter = $rcmail->imap->get_hierarchy_delimiter();
+	if($this->config["debug"]) write_log("pop3fetcher.txt", "SET DEFAULT FOLDER ON SAVE: $pop3fetcher_defaultfolder");
+	if($pop3fetcher_defaultfolder=="#AUTO_FOLDER#")
+		$pop3fetcher_defaultfolder = $this->config["root_folder_path"].$delimiter.str_replace($delimiter,"_",$pop3fetcher_email);
+	
+	// check if the folder exists
+	if($rcmail->imap->folder_exists($pop3fetcher_defaultfolder)){
+		if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: settings, FOLDER $pop3fetcher_defaultfolder EXISTS");
+	}else{
+		$rcmail->imap->create_folder($pop3fetcher_defaultfolder,true);
+		if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: settings, FOLDER $pop3fetcher_defaultfolder DOESN'T EXIST, MUST CREATE IT!");
+	}
+	
 	
 	if($pop3fetcher_leaveacopy=="true"){
 		$pop3fetcher_leaveacopy=true;
@@ -539,7 +567,7 @@ function add_do(){
 		if($c){
 			$msglist = POP35::puidl($c);
 			$last_uidl = $msglist[count($msglist)-1];
-			write_log("test_pop3fetcher.txt", "INTERCEPT: TASK ADDACCOUNT, fetching last UID $last_uidl");
+			if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: TASK ADDACCOUNT, fetching last UID $last_uidl");
 		}
 		$query = "SELECT * FROM " . get_table_name('pop3fetcher_accounts') . " WHERE user_id=? AND pop3fetcher_email=?";
 		$ret = $rcmail->db->query($query, $user_id, $pop3fetcher_email);
@@ -613,19 +641,19 @@ function add_do(){
 		require_once './plugins/pop3fetcher/XPM4/POP35.php';
       		require_once './plugins/pop3fetcher/XPM4/FUNC5.php';
 		$pop3fetcher_serverport=intval($pop3fetcher_serverport);
-		write_log("test_pop3fetcher.txt", "TESTING CONNECTION: $pop3fetcher_username, $pop3fetcher_password, $pop3fetcher_serveraddress, $pop3fetcher_serverport, $pop3fetcher_ssl");
+		if($this->config["debug"]) write_log("pop3fetcher.txt", "TESTING CONNECTION: $pop3fetcher_username, $pop3fetcher_password, $pop3fetcher_serveraddress, $pop3fetcher_serverport, $pop3fetcher_ssl");
 		if($pop3fetcher_serverport>0&&FUNC5::is_hostname($pop3fetcher_serveraddress, true)){
 			$c = POP35::connect($pop3fetcher_serveraddress, $pop3fetcher_username, $pop3fetcher_password, $pop3fetcher_serverport, $pop3fetcher_ssl, 100,NULL, false);
 			if($c){
-				write_log("test_pop3fetcher.txt", "TESTING CONNECTION: SUCCESS $pop3fetcher_serveraddress:$pop3fetcher_serverport");
+				if($this->config["debug"]) write_log("pop3fetcher.txt", "TESTING CONNECTION: SUCCESS $pop3fetcher_serveraddress:$pop3fetcher_serverport");
 				POP35::disconnect($c, false);
 				return(true);
 			} else {
-				write_log("test_pop3fetcher.txt", "TESTING CONNECTION: FAIL $pop3fetcher_serveraddress:$pop3fetcher_serverport");
+				if($this->config["debug"]) write_log("pop3fetcher.txt", "TESTING CONNECTION: FAIL $pop3fetcher_serveraddress:$pop3fetcher_serverport");
 				return(false);
 			}
 		} else {
-			write_log("test_pop3fetcher.txt", "TESTING CONNECTION: FAIL $pop3fetcher_serveraddress:$pop3fetcher_serverport");
+			if($this->config["debug"]) write_log("pop3fetcher.txt", "TESTING CONNECTION: FAIL $pop3fetcher_serveraddress:$pop3fetcher_serverport");
 			return(false);
 		}
   }

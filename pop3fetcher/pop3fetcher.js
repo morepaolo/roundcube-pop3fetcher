@@ -94,3 +94,14 @@ function load_pop3_providers(cur_selected_provider){
 		}
 	);
 }
+
+function update_default_folder_name(name){
+	if(name==""){
+		$("#pop3fetcher_defaultfolder").find('option[value|="#AUTO_FOLDER#"]').remove();
+	} else {
+		if($("#pop3fetcher_defaultfolder").find('option[value|="#AUTO_FOLDER#"]').length==0)
+			$("#pop3fetcher_defaultfolder").append('<option value="#AUTO_FOLDER#">'+name+'</option>');
+		else
+			$("#pop3fetcher_defaultfolder").find('option[value|="#AUTO_FOLDER#"]').html(name);
+	}
+}
