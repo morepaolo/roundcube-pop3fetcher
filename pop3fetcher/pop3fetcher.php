@@ -26,6 +26,9 @@ class pop3fetcher extends rcube_plugin
 	public $config = Array(
 		"max_forwarded_message_size" => 4194304,
 		"root_folder_path" => "INBOX",
+		"automatically_check_for_updates" => true,
+		"updates_url" => "https://raw.github.com/morepaolo/roundcube-pop3fetcher/master/pop3fetcher/version.txt",
+		"github_package_url" => "https://github.com/morepaolo/roundcube-pop3fetcher",
 		"debug" => false
 	);
 	public $task = 'mail|settings';
@@ -206,6 +209,19 @@ function navigation(){
 function settings($args){
 	$framed = get_input_value('_framed', RCUBE_INPUT_POST);
 	if ($args['section'] == 'pop3fetcher') {
+		
+		if($this->config['automatically_check_for_updates']){
+			$current_version = $this->get_current_version();
+			$latest_version = $this->get_latest_version();
+			$args['blocks']['current_version'] = Array("name" => $this->gettext("pop3fetcher_current_version").$current_version." \n");
+			$args['blocks']['current_version']['options']['line_1'] = Array(
+				"title" => $this->gettext("pop3fetcher_latest_version").$latest_version
+			);
+			if($current_version==$latest_version)
+				$args['blocks']['current_version']['options']['line_1']['content'] = $this->gettext("pop3fetcher_updated");
+			else 
+				$args['blocks']['current_version']['options']['line_1']['content'] = $this->gettext("pop3fetcher_outdated")."<a target='_blank' href='".$this->config['github_package_url']."'>".$this->config['github_package_url']."</a>";
+		}		
 		$args['blocks']['main']['name'] = "";
 		$accounts = $this->accounts_get_sorted_list();
 		if(count($accounts) > 0){
@@ -656,6 +672,24 @@ function add_do(){
 			if($this->config["debug"]) write_log("pop3fetcher.txt", "TESTING CONNECTION: FAIL $pop3fetcher_serveraddress:$pop3fetcher_serverport");
 			return(false);
 		}
+  }
+  
+  function get_latest_version(){
+	$filename = $this->config['updates_url'];
+	$f = fopen($filename, "r");
+	$contents = stream_get_contents($f);
+	$contents_obj = json_decode($contents);
+	fclose($f);
+	return($contents_obj->current_version);
+  }
+  
+  function get_current_version(){
+	$filename = "./plugins/pop3fetcher/version.txt";
+	$f = fopen($filename, "r");
+	$contents = fread($f, filesize($filename));
+	$contents_obj = json_decode($contents);
+	fclose($f);
+	return($contents_obj->current_version);
   }
 }
 ?>

@@ -1,4 +1,4 @@
-roundcube-pop3fetcher v1.2
+roundcube-pop3fetcher v1.3
 ==========================
 
 Tested on RoundCube 8.4, 8.5, 9.0
@@ -26,6 +26,10 @@ Now, login into RoundCube, go to the settings panel and add the POP3 accounts as
 
 CHANGELOG:
 ==========
+
+1.3
+Added auto-check-for-updates capability. Pop3fetcher will check on github if a new version of the software is available, suggesting you to install it.
+This functionality can be disabled modifying pop3fetcher.php at line 29 ($config['automatically_check_for_updates'] = false)
 
 1.2
 Fixed a bug which didn't allowed to choose the default folder of POP3 account upon creation of the same (the folder was selectable only after the account saved and edited)

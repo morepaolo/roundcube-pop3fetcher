@@ -28,6 +28,10 @@ $labels['account_unableconnect'] = "Unable to connect to address";
 $labels['account_provider'] = 'Provider';
 $labels['test_connection_on_save'] = 'Test connection on save';
 $labels['account_default_folder'] = 'Default Folder';
+$labels['pop3fetcher_current_version'] = 'CURRENT VERSION: ';
+$labels['pop3fetcher_latest_version'] = 'Latest version is: ';
+$labels['pop3fetcher_updated'] = 'Pop3fetcher is updated to the latest version';
+$labels['pop3fetcher_outdated'] = "There's an update available for Pop3fetcher.<br />Download it from ";
 
 /* FROM NOW ON: CHECK */
 $labels['remoteaccounts'] = 'Remote IMAP Accounts';
