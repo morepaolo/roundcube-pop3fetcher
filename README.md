@@ -27,6 +27,9 @@ Now, login into RoundCube, go to the settings panel and add the POP3 accounts as
 CHANGELOG:
 ==========
 
+1.4
+Added ru_RU localization. Thanks to Alexej Ruseckij for the collaboration!
+
 1.3
 Added auto-check-for-updates capability. Pop3fetcher will check on github if a new version of the software is available, suggesting you to install it.
 This functionality can be disabled modifying pop3fetcher.php at line 29 ($config['automatically_check_for_updates'] = false)
