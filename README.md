@@ -29,6 +29,7 @@ CHANGELOG:
 
 1.5
 Added zh_TW localization. Thanks to Anhsiou Tsai for the collaboration!
+Fixed a bug notified by a user, in the settings panel the user interface button was hidden by the plugin
 
 1.4
 Added ru_RU localization. Thanks to Alexej Ruseckij for the collaboration!
