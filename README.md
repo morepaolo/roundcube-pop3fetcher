@@ -1,4 +1,4 @@
-roundcube-pop3fetcher v1.3
+roundcube-pop3fetcher v1.5
 ==========================
 
 Tested on RoundCube 8.4, 8.5, 9.0
@@ -26,6 +26,9 @@ Now, login into RoundCube, go to the settings panel and add the POP3 accounts as
 
 CHANGELOG:
 ==========
+
+1.5
+Added zh_TW localization. Thanks to Anhsiou Tsai for the collaboration!
 
 1.4
 Added ru_RU localization. Thanks to Alexej Ruseckij for the collaboration!
