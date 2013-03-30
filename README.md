@@ -6,6 +6,11 @@ Definitely not working in RoundCube 7.2 (due to the usage of rcmail::get_storage
 
 Pop3fetcher is a plugin for the popular Roundcube IMAP client, which allows Roundcube's users to add POP3 accounts and automatically fetch emails from them
 
+Do you like this plugin, and wanna contribute to the development?
+Follow this link, and offer me a coffee with Paypal!
+
+https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=morepaolo%40gmail%2ecom&lc=IT&item_name=Roundcube%2dPop3fetcher&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
+
 HOW TO INSTALL:
 ===============
 
