@@ -9,51 +9,52 @@
 |                                                                       |
 +-----------------------------------------------------------------------+
 | Author: Paolo Moretti <morepaolo@gmail.com>            	            |
+| Translation: Johannes Ries <http://metafakten.de>
 +-----------------------------------------------------------------------+
 
 */
 
 $labels = array();
-$labels['other_accounts'] = 'Other Accounts';
-$labels['editaccount'] = 'Edit Account';
-$labels['addaccount'] = 'Add Account';
-$labels['account_email'] = 'Email';
-$labels['account_username'] = 'Username';
-$labels['account_password'] = 'Password';
-$labels['account_serveraddress'] = 'Server Address';
+$labels['other_accounts'] = 'Weitere Accounts';
+$labels['editaccount'] = 'Account bearbeiten';
+$labels['addaccount'] = 'Account erstellen';
+$labels['account_email'] = 'E-Mail-Adresse';
+$labels['account_username'] = 'Benutzername';
+$labels['account_password'] = 'Passwort';
+$labels['account_serveraddress'] = 'Server Adresse';
 $labels['account_serverport'] = 'Server Port';
-$labels['account_usessl'] = 'Use SSL';
-$labels['account_leaveacopy'] = 'Leave a copy of the message on the server';
+$labels['account_usessl'] = 'Verschl&uuml;sselung';
+$labels['account_leaveacopy'] = 'Kopien der Nachrichten auf dem Server belassen';
 $labels['account_unableconnect'] = "Unable to connect to address";
 $labels['account_provider'] = 'Provider';
-$labels['test_connection_on_save'] = 'Test connection on save';
-$labels['account_default_folder'] = 'Default Folder';
-$labels['pop3fetcher_current_version'] = 'CURRENT VERSION: ';
-$labels['pop3fetcher_latest_version'] = 'Latest version is: ';
-$labels['pop3fetcher_updated'] = 'Pop3fetcher is updated to the latest version';
-$labels['pop3fetcher_outdated'] = "There's an update available for Pop3fetcher.<br />Download it from ";
+$labels['test_connection_on_save'] = 'Verbindung beim Speichern testen';
+$labels['account_default_folder'] = 'Standard Ordner';
+$labels['pop3fetcher_current_version'] = 'Aktuelle Version: ';
+$labels['pop3fetcher_latest_version'] = 'Die aktuelle Version ist: ';
+$labels['pop3fetcher_updated'] = 'Pop3fetcher ist aktuell.';
+$labels['pop3fetcher_outdated'] = "Eine Aktualisierung f&uuml;r Popfetcher ist verf&uuml;gbar.<br />Laden Sie sie hier herunter ";
 
 /* FROM NOW ON: CHECK */
 $labels['remoteaccounts'] = 'Remote IMAP Accounts';
 $labels['pluginname'] = 'Remote IMAP Accounts';
-$labels['plugindescription'] = 'Allows a user to access messages stored in any remote folder as if it were a local folder.';
+$labels['plugindescription'] = 'Erlaubt Nutzern Nachrichten in jedem Remote Ordner zu lesen, als w&auml;re er ein lokaler Ordner.';
 $labels['account_dn'] = 'Account Name';
-$labels['account_id'] = 'Login ID';
-$labels['account_pw'] = 'Password';
-$labels['account_pw_conf'] = 'Confirm Password';
+$labels['account_id'] = 'Benutzername';
+$labels['account_pw'] = 'Passwort';
+$labels['account_pw_conf'] = 'Passwort wiederholen';
 $labels['account_provider'] = 'Provider';
-$labels['add'] = 'Add';
-$labels['back'] = 'Abort';
-$labels['submit'] = 'Submit';
-$labels['archivefolder'] = 'Archive';
-$labels['remotefolders'] = 'Special Folders';
-$labels['description'] = 'Manage additional IMAP Accounts.';
-$labels['dnempty'] = 'Please enter a name for this account';
-$labels['userempty'] = 'Please enter account login ID';
-$labels['passwordempty'] = 'Please enter password';
-$labels['passwordnotmatch'] = 'Password does not match';
-$labels['hostempty'] = 'Please enter host url (f.e. ssl://imap.gmail.com:993)';
-$labels['accountexists'] = 'This account already exists. You have been redirected to edit mode.';
-$labels['connectionfailed'] = 'Failed to establish connection to remote host.';
+$labels['add'] = 'Hinzuf&uuml;gen';
+$labels['back'] = 'Abbrechen';
+$labels['submit'] = 'Speichern';
+$labels['archivefolder'] = 'Archiv';
+$labels['remotefolders'] = 'Spezialordner';
+$labels['description'] = 'Zus&auml;tzliche IMAP-Accounts verwalten';
+$labels['dnempty'] = 'Bitte geben Sie einen Namen f&uuml;r den Account an';
+$labels['userempty'] = 'Bitte geben Sie ihren Benutzernamen an';
+$labels['passwordempty'] = 'Bitte geben Sie ihr Passwort an';
+$labels['passwordnotmatch'] = 'Das Passwort ist fehlerhaft';
+$labels['hostempty'] = 'Bitte geben Sie eine Serveradresse an (z.B. ssl://imap.gmail.com:993)';
+$labels['accountexists'] = 'Dieser Account besteht bereits. Sie werden zum Bearbeitungsmodus weitergeleitet.';
+$labels['connectionfailed'] = 'Eine Server-Verbindung konnte nicht hergestellt werden.';
 
 ?>
