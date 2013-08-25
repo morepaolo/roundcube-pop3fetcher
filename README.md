@@ -32,6 +32,9 @@ Now, login into RoundCube, go to the settings panel and add the POP3 accounts as
 CHANGELOG:
 ==========
 
+1.6
+Fixed German Translation (de_DE), thanks to glasklar, and added nl_NL (thanks to John Droppert)
+
 1.5
 Added zh_TW localization. Thanks to Anhsiou Tsai for the collaboration!
 Fixed a bug notified by a user, in the settings panel the user interface button was hidden by the plugin
