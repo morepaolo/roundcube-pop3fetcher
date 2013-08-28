@@ -16,6 +16,8 @@ HOW TO INSTALL:
 
 In order to install the plugin, just copy the folder named "pop3fetcher" in Roundcube's plugins folder.
 
+mysql:
+
 Then, you'll have to add the table to the database (Mysql version is provided in the SQL folder). Open the SQL/mysql.sql file, replace #REPLACE_WITH_YOUR_DB_NAME# 
 with the correct name (e.g. if your roundcube's database name is "roundcubemail", the query should look like:
 
@@ -24,6 +26,11 @@ CREATE TABLE  `roundcubemail`.`pop3fetcher_accounts` (
   `pop3fetcher_id` int(10) unsigned NOT N...
   
 And run the script. (Thanks to Achim Bleichner for this suggestion)
+
+sqlite:
+
+sqlite3 -init - sqlite.db < SQL/sqlite.sql↲
+
 
 Finally, edit the main.inc.php file in the config folder, adding the plugin "pop3fetcher" at around line 378 (PLUGINS)
 
