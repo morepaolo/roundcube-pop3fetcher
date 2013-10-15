@@ -1,8 +1,8 @@
-roundcube-pop3fetcher v1.5
+roundcube-pop3fetcher v1.7
 ==========================
 
-Tested on RoundCube 8.4, 8.5, 9.0
-Definitely not working in RoundCube 7.2 (due to the usage of rcmail::get_storage at line 104)
+Manually Tested on RoundCube 8.2, 8.4, 8.5, 9.0, 9.1, 9.2, 9.3, 9.4
+Definitely not working in RoundCube 7.2 (due to the usage of rcmail::get_storage at line 119)
 
 Pop3fetcher is a plugin for the popular Roundcube IMAP client, which allows Roundcube's users to add POP3 accounts and automatically fetch emails from them
 
@@ -36,8 +36,21 @@ Finally, edit the main.inc.php file in the config folder, adding the plugin "pop
 
 Now, login into RoundCube, go to the settings panel and add the POP3 accounts as you prefer 
 
+GMAIL ISSUE:
+===============
+When enabling Gmail's POP3 capability, you may observe a strange behaviour, due to the fact that Gmail's POP3 is a bulk export feature, which is not thought to enable synch.
+In fact, when you enable POP3, Gmail starts a queue which allows to export bundle of messages. This means that, until a bundle is exported, its last message uidl will be the most recent uidl available, even if new messages arrive.
+But that uidl will be saved as last uidl (meaning "start from here") in pop3fetcher, so pop3fetcher will never find newer messages.
+
+The trick is to allow to import also older messages with POP3fetcher, this way Gmail's queue will be emptied correctly. The threat is that you'll have to manually delete useless old emails imported from Gmail.
+
+
 CHANGELOG:
 ==========
+1.7
+Added cs_CZ for czech language, thanks to Daniel Bilik
+
+Added option to import old messages when connecting a new account!!! (FAF, Frequently Asked Feature). Note that it's not possible to import messages for an already saved account, so if you want to import messages you'll have to delete the account and re-add it.
 
 1.6
 Fixed German Translation (de_DE), thanks to glasklar, and added nl_NL (thanks to John Droppert)
