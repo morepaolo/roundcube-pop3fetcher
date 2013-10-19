@@ -1,4 +1,4 @@
-roundcube-pop3fetcher v1.7
+roundcube-pop3fetcher v1.8
 ==========================
 
 Manually Tested on RoundCube 8.2, 8.4, 8.5, 9.0, 9.1, 9.2, 9.3, 9.4
@@ -47,6 +47,9 @@ The trick is to allow to import also older messages with POP3fetcher, this way G
 
 CHANGELOG:
 ==========
+1.8
+Added fr_FR for french language, thanks to Matthias Dupont
+
 1.7
 Added cs_CZ for czech language, thanks to Daniel Bilik
 
