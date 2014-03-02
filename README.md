@@ -1,4 +1,4 @@
-roundcube-pop3fetcher v1.8
+roundcube-pop3fetcher v1.9
 ==========================
 
 Manually Tested on RoundCube 8.2, 8.4, 8.5, 9.0, 9.1, 9.2, 9.3, 9.4
@@ -47,6 +47,9 @@ The trick is to allow to import also older messages with POP3fetcher, this way G
 
 CHANGELOG:
 ==========
+1.9
+Fixed auto-check of newly received messages not working since Roundcube 9.X, due to a change in asynchronous action name (from "check-recent" to "refresh")
+
 1.8
 Added fr_FR for french language, thanks to Matthias Dupont
 
