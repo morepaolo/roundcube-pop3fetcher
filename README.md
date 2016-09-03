@@ -1,8 +1,7 @@
-roundcube-pop3fetcher v1.9
+roundcube-pop3fetcher v1.9.1
 ==========================
 
-Manually Tested on RoundCube 8.2, 8.4, 8.5, 9.0, 9.1, 9.2, 9.3, 9.4
-Definitely not working in RoundCube 7.2 (due to the usage of rcmail::get_storage at line 119)
+Tested on RoundCube 1.2 and 1.2.1 (should also work with older 1.x versions)
 
 Pop3fetcher is a plugin for the popular Roundcube IMAP client, which allows Roundcube's users to add POP3 accounts and automatically fetch emails from them
 
@@ -48,7 +47,7 @@ The trick is to allow to import also older messages with POP3fetcher, this way G
 CHANGELOG:
 ==========
 1.9.1
-Removed deprecated functions to make pop3fetcher works on Roundcube 1.2+.  Added several additional languages.
+Removed deprecated functions to make pop3fetcher works on Roundcube 1.2+.  Added several additional languages - Thanks to PVasileff, Brendan Braybrook and Tucows/OpenSRS team.
 
 1.9
 Fixed auto-check of newly received messages not working since Roundcube 9.X, due to a change in asynchronous action name (from "check-recent" to "refresh")
