@@ -67,7 +67,7 @@ function init(){
       	require_once './plugins/pop3fetcher/XPM4/FUNC5.php';
 		
 		$user_id = $this->rcmail->user->data['user_id'];  
-		$query = "SELECT * FROM " . get_table_name('pop3fetcher_accounts') . " WHERE user_id=?";
+		$query = "SELECT * FROM " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . " WHERE user_id=?";
 		$ret = $this->rcmail->db->query($query, $user_id);
 		$accounts = array();
 		while($account = $this->rcmail->db->fetch_assoc($ret))
@@ -152,7 +152,7 @@ function init(){
 									if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: Skipped message $last_uidl ");
 								}
 								if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: trying to update DB: $last_uidl ".$val['pop3fetcher_id']);
-								$query = "UPDATE " . get_table_name('pop3fetcher_accounts') . " SET last_uidl=? WHERE pop3fetcher_id=?";
+								$query = "UPDATE " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . " SET last_uidl=? WHERE pop3fetcher_id=?";
 								$ret = $this->rcmail->db->query($query, $last_uidl, $val['pop3fetcher_id']);
 								if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: updated DB: $last_uidl ".$val['pop3fetcher_id']);
 								$k=$k+1;
@@ -304,7 +304,7 @@ function edit_do(){
         $this->rcmail->output->send('plugin');
 	} else {
 		//$pop3fetcher_password = $rcmail->encrypt($pop3fetcher_password);
-		$query = "UPDATE " . get_table_name('pop3fetcher_accounts') . " SET pop3fetcher_email=?, pop3fetcher_username=?, pop3fetcher_password=?, pop3fetcher_serveraddress=?, pop3fetcher_serverport=?, pop3fetcher_SSL=?, pop3fetcher_leaveacopyonserver=?, pop3fetcher_provider=?, default_folder=? WHERE pop3fetcher_id=?";
+		$query = "UPDATE " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . " SET pop3fetcher_email=?, pop3fetcher_username=?, pop3fetcher_password=?, pop3fetcher_serveraddress=?, pop3fetcher_serverport=?, pop3fetcher_SSL=?, pop3fetcher_leaveacopyonserver=?, pop3fetcher_provider=?, default_folder=? WHERE pop3fetcher_id=?";
 		$ret = $rcmail->db->query($query, $pop3fetcher_email, $pop3fetcher_username, $pop3fetcher_password, $pop3fetcher_serveraddress, $pop3fetcher_serverport, $pop3fetcher_ssl, $pop3fetcher_leaveacopy, $pop3fetcher_provider, $pop3fetcher_defaultfolder, $pop3fetcher_id);
 		if($ret){
 			$this->rcmail->output->command('plugin.edit_do_ok', Array());
@@ -355,7 +355,7 @@ function get($pop3fetcher_id=0){
 	$rcmail = rcmail::get_instance();
     $user_id = $rcmail->user->data['user_id'];  
 	  
-	$query = "SELECT * FROM " . get_table_name('pop3fetcher_accounts') . " WHERE pop3fetcher_id=? and user_id=?";
+	$query = "SELECT * FROM " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . " WHERE pop3fetcher_id=? and user_id=?";
 
 	$ret = $rcmail->db->query($query, $pop3fetcher_id, $user_id);
 	$sql = $rcmail->db->fetch_assoc($ret);
@@ -606,11 +606,11 @@ function add_do(){
 				if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: TASK ADDACCOUNT, fetching last UID $last_uidl");
 			}
 		}
-		$query = "SELECT * FROM " . get_table_name('pop3fetcher_accounts') . " WHERE user_id=? AND pop3fetcher_email=?";
+		$query = "SELECT * FROM " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . " WHERE user_id=? AND pop3fetcher_email=?";
 		$ret = $rcmail->db->query($query, $user_id, $pop3fetcher_email);
 		$arr = $rcmail->db->fetch_assoc($ret);
 		if(!is_array($arr)){
-			$query = "INSERT INTO " . get_table_name('pop3fetcher_accounts') . "(pop3fetcher_email, pop3fetcher_username, pop3fetcher_password, pop3fetcher_serveraddress, pop3fetcher_serverport, pop3fetcher_ssl, pop3fetcher_leaveacopyonserver, user_id, last_uidl, pop3fetcher_provider, default_folder) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			$query = "INSERT INTO " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . "(pop3fetcher_email, pop3fetcher_username, pop3fetcher_password, pop3fetcher_serveraddress, pop3fetcher_serverport, pop3fetcher_ssl, pop3fetcher_leaveacopyonserver, user_id, last_uidl, pop3fetcher_provider, default_folder) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			$ret = $rcmail->db->query($query,
 				$pop3fetcher_email,
 				$pop3fetcher_username,
@@ -644,7 +644,7 @@ function add_do(){
     $rcmail = rcmail::get_instance();  
     $user_id = $rcmail->user->data['user_id'];
     $accounts = array();
-    $query = "SELECT * FROM " . get_table_name('pop3fetcher_accounts') . " WHERE user_id=?";
+    $query = "SELECT * FROM " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . " WHERE user_id=?";
 	$sql = $rcmail->db->query($query, $user_id);
     while($account = $rcmail->db->fetch_assoc($sql))
       $accounts[] = $account;
@@ -667,7 +667,7 @@ function add_do(){
 		$rcmail = $this->rcmail;
 		$user_id = $this->rcmail->user->data['user_id'];  
 		$pop3fetcher_id = get_input_value('_pop3fetcher_id', RCUBE_INPUT_POST);
-		$query = "DELETE FROM " . get_table_name('pop3fetcher_accounts') . " WHERE user_id=? and pop3fetcher_id=?";
+		$query = "DELETE FROM " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . " WHERE user_id=? and pop3fetcher_id=?";
 		$sql = $rcmail->db->query($query, $user_id, $pop3fetcher_id);
 		$this->rcmail->output->command('plugin.delete_do_ok', Array());
 		$this->rcmail->output->send('plugin');
