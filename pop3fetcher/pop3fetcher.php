@@ -67,7 +67,7 @@ function init(){
       	require_once './plugins/pop3fetcher/XPM4/FUNC5.php';
 		
 		$user_id = $this->rcmail->user->data['user_id'];  
-		$query = "SELECT * FROM " . get_table_name('pop3fetcher_accounts') . " WHERE user_id=?";
+		$query = "SELECT * FROM " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . " WHERE user_id=?";
 		$ret = $this->rcmail->db->query($query, $user_id);
 		$accounts = array();
 		while($account = $this->rcmail->db->fetch_assoc($ret))
@@ -152,7 +152,7 @@ function init(){
 									if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: Skipped message $last_uidl ");
 								}
 								if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: trying to update DB: $last_uidl ".$val['pop3fetcher_id']);
-								$query = "UPDATE " . get_table_name('pop3fetcher_accounts') . " SET last_uidl=? WHERE pop3fetcher_id=?";
+								$query = "UPDATE " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . " SET last_uidl=? WHERE pop3fetcher_id=?";
 								$ret = $this->rcmail->db->query($query, $last_uidl, $val['pop3fetcher_id']);
 								if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: updated DB: $last_uidl ".$val['pop3fetcher_id']);
 								$k=$k+1;
@@ -208,7 +208,7 @@ function navigation(){
   }
   
 function settings($args){
-	$framed = get_input_value('_framed', RCUBE_INPUT_POST);
+	$framed = rcube_utils::get_input_value('_framed', RCUBE_INPUT_POST);
 	if ($args['section'] == 'pop3fetcher') {
 		
 		if($this->config['automatically_check_for_updates']){
@@ -261,17 +261,17 @@ function edit(){
 function edit_do(){
 	$rcmail = rcmail::get_instance();
 
-	$pop3fetcher_id = get_input_value('_pop3fetcher_id', RCUBE_INPUT_POST);
-	$pop3fetcher_email = get_input_value('_pop3fetcher_email', RCUBE_INPUT_POST);
-	$pop3fetcher_username = get_input_value('_pop3fetcher_username', RCUBE_INPUT_POST);
-	$pop3fetcher_password = get_input_value('_pop3fetcher_password', RCUBE_INPUT_POST);
-	$pop3fetcher_serveraddress = get_input_value('_pop3fetcher_serveraddress', RCUBE_INPUT_POST);
-	$pop3fetcher_serverport = get_input_value('_pop3fetcher_serverport', RCUBE_INPUT_POST);
-	$pop3fetcher_ssl = get_input_value('_pop3fetcher_ssl', RCUBE_INPUT_POST);
-	$pop3fetcher_leaveacopy = get_input_value('_pop3fetcher_leaveacopy', RCUBE_INPUT_POST);
-	$pop3fetcher_provider = get_input_value('_pop3fetcher_provider', RCUBE_INPUT_POST);
-	$pop3fetcher_testconnection = get_input_value('_pop3fetcher_testconnection', RCUBE_INPUT_POST);
-	$pop3fetcher_defaultfolder = get_input_value('_pop3fetcher_defaultfolder', RCUBE_INPUT_POST);
+	$pop3fetcher_id = rcube_utils::get_input_value('_pop3fetcher_id', RCUBE_INPUT_POST);
+	$pop3fetcher_email = rcube_utils::get_input_value('_pop3fetcher_email', RCUBE_INPUT_POST);
+	$pop3fetcher_username = rcube_utils::get_input_value('_pop3fetcher_username', RCUBE_INPUT_POST);
+	$pop3fetcher_password = rcube_utils::get_input_value('_pop3fetcher_password', RCUBE_INPUT_POST);
+	$pop3fetcher_serveraddress = rcube_utils::get_input_value('_pop3fetcher_serveraddress', RCUBE_INPUT_POST);
+	$pop3fetcher_serverport = rcube_utils::get_input_value('_pop3fetcher_serverport', RCUBE_INPUT_POST);
+	$pop3fetcher_ssl = rcube_utils::get_input_value('_pop3fetcher_ssl', RCUBE_INPUT_POST);
+	$pop3fetcher_leaveacopy = rcube_utils::get_input_value('_pop3fetcher_leaveacopy', RCUBE_INPUT_POST);
+	$pop3fetcher_provider = rcube_utils::get_input_value('_pop3fetcher_provider', RCUBE_INPUT_POST);
+	$pop3fetcher_testconnection = rcube_utils::get_input_value('_pop3fetcher_testconnection', RCUBE_INPUT_POST);
+	$pop3fetcher_defaultfolder = rcube_utils::get_input_value('_pop3fetcher_defaultfolder', RCUBE_INPUT_POST);
 	
 	
 	//MUST CREATE THE TARGET FOLDER IF IT DOESN'T EXIST
@@ -304,7 +304,7 @@ function edit_do(){
         $this->rcmail->output->send('plugin');
 	} else {
 		//$pop3fetcher_password = $rcmail->encrypt($pop3fetcher_password);
-		$query = "UPDATE " . get_table_name('pop3fetcher_accounts') . " SET pop3fetcher_email=?, pop3fetcher_username=?, pop3fetcher_password=?, pop3fetcher_serveraddress=?, pop3fetcher_serverport=?, pop3fetcher_SSL=?, pop3fetcher_leaveacopyonserver=?, pop3fetcher_provider=?, default_folder=? WHERE pop3fetcher_id=?";
+		$query = "UPDATE " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . " SET pop3fetcher_email=?, pop3fetcher_username=?, pop3fetcher_password=?, pop3fetcher_serveraddress=?, pop3fetcher_serverport=?, pop3fetcher_SSL=?, pop3fetcher_leaveacopyonserver=?, pop3fetcher_provider=?, default_folder=? WHERE pop3fetcher_id=?";
 		$ret = $rcmail->db->query($query, $pop3fetcher_email, $pop3fetcher_username, $pop3fetcher_password, $pop3fetcher_serveraddress, $pop3fetcher_serverport, $pop3fetcher_ssl, $pop3fetcher_leaveacopy, $pop3fetcher_provider, $pop3fetcher_defaultfolder, $pop3fetcher_id);
 		if($ret){
 			$this->rcmail->output->command('plugin.edit_do_ok', Array());
@@ -319,7 +319,7 @@ function edit_do(){
 function accounts_edit($args){
 	$rcmail = rcmail::get_instance();
 	
-	$pop3fetcher_id = get_input_value('_pop3fetcher_id', RCUBE_INPUT_GET);
+	$pop3fetcher_id = rcube_utils::get_input_value('_pop3fetcher_id', RCUBE_INPUT_GET);
 
 	$arr = $this->get($pop3fetcher_id);
 	
@@ -355,7 +355,7 @@ function get($pop3fetcher_id=0){
 	$rcmail = rcmail::get_instance();
     $user_id = $rcmail->user->data['user_id'];  
 	  
-	$query = "SELECT * FROM " . get_table_name('pop3fetcher_accounts') . " WHERE pop3fetcher_id=? and user_id=?";
+	$query = "SELECT * FROM " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . " WHERE pop3fetcher_id=? and user_id=?";
 
 	$ret = $rcmail->db->query($query, $pop3fetcher_id, $user_id);
 	$sql = $rcmail->db->fetch_assoc($ret);
@@ -544,17 +544,17 @@ function accounts_add($args){
 function add_do(){
 	$rcmail = $this->rcmail;
 	
-	$pop3fetcher_email = get_input_value('_pop3fetcher_email', RCUBE_INPUT_POST);
-	$pop3fetcher_username = get_input_value('_pop3fetcher_username', RCUBE_INPUT_POST);
-	$pop3fetcher_password = get_input_value('_pop3fetcher_password', RCUBE_INPUT_POST);
-	$pop3fetcher_serveraddress = get_input_value('_pop3fetcher_serveraddress', RCUBE_INPUT_POST);
-	$pop3fetcher_serverport = get_input_value('_pop3fetcher_serverport', RCUBE_INPUT_POST);
-	$pop3fetcher_ssl = get_input_value('_pop3fetcher_ssl', RCUBE_INPUT_POST);
-	$pop3fetcher_leaveacopy = get_input_value('_pop3fetcher_leaveacopy', RCUBE_INPUT_POST);
-	$pop3fetcher_provider = get_input_value('_pop3fetcher_provider', RCUBE_INPUT_POST);
-	$pop3fetcher_testconnection = get_input_value('_pop3fetcher_testconnection', RCUBE_INPUT_POST);
-	$pop3fetcher_defaultfolder = get_input_value('_pop3fetcher_defaultfolder', RCUBE_INPUT_POST);
-	$pop3fetcher_import_old_messages = get_input_value('_pop3fetcher_import_old_messages', RCUBE_INPUT_POST);
+	$pop3fetcher_email = rcube_utils::get_input_value('_pop3fetcher_email', RCUBE_INPUT_POST);
+	$pop3fetcher_username = rcube_utils::get_input_value('_pop3fetcher_username', RCUBE_INPUT_POST);
+	$pop3fetcher_password = rcube_utils::get_input_value('_pop3fetcher_password', RCUBE_INPUT_POST);
+	$pop3fetcher_serveraddress = rcube_utils::get_input_value('_pop3fetcher_serveraddress', RCUBE_INPUT_POST);
+	$pop3fetcher_serverport = rcube_utils::get_input_value('_pop3fetcher_serverport', RCUBE_INPUT_POST);
+	$pop3fetcher_ssl = rcube_utils::get_input_value('_pop3fetcher_ssl', RCUBE_INPUT_POST);
+	$pop3fetcher_leaveacopy = rcube_utils::get_input_value('_pop3fetcher_leaveacopy', RCUBE_INPUT_POST);
+	$pop3fetcher_provider = rcube_utils::get_input_value('_pop3fetcher_provider', RCUBE_INPUT_POST);
+	$pop3fetcher_testconnection = rcube_utils::get_input_value('_pop3fetcher_testconnection', RCUBE_INPUT_POST);
+	$pop3fetcher_defaultfolder = rcube_utils::get_input_value('_pop3fetcher_defaultfolder', RCUBE_INPUT_POST);
+	$pop3fetcher_import_old_messages = rcube_utils::get_input_value('_pop3fetcher_import_old_messages', RCUBE_INPUT_POST);
 		
 	//MUST CREATE THE TARGET FOLDER IF IT DOESN'T EXIST
 	$rcmail->storage_connect();
@@ -606,11 +606,11 @@ function add_do(){
 				if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: TASK ADDACCOUNT, fetching last UID $last_uidl");
 			}
 		}
-		$query = "SELECT * FROM " . get_table_name('pop3fetcher_accounts') . " WHERE user_id=? AND pop3fetcher_email=?";
+		$query = "SELECT * FROM " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . " WHERE user_id=? AND pop3fetcher_email=?";
 		$ret = $rcmail->db->query($query, $user_id, $pop3fetcher_email);
 		$arr = $rcmail->db->fetch_assoc($ret);
 		if(!is_array($arr)){
-			$query = "INSERT INTO " . get_table_name('pop3fetcher_accounts') . "(pop3fetcher_email, pop3fetcher_username, pop3fetcher_password, pop3fetcher_serveraddress, pop3fetcher_serverport, pop3fetcher_ssl, pop3fetcher_leaveacopyonserver, user_id, last_uidl, pop3fetcher_provider, default_folder) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			$query = "INSERT INTO " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . "(pop3fetcher_email, pop3fetcher_username, pop3fetcher_password, pop3fetcher_serveraddress, pop3fetcher_serverport, pop3fetcher_ssl, pop3fetcher_leaveacopyonserver, user_id, last_uidl, pop3fetcher_provider, default_folder) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			$ret = $rcmail->db->query($query,
 				$pop3fetcher_email,
 				$pop3fetcher_username,
@@ -644,7 +644,7 @@ function add_do(){
     $rcmail = rcmail::get_instance();  
     $user_id = $rcmail->user->data['user_id'];
     $accounts = array();
-    $query = "SELECT * FROM " . get_table_name('pop3fetcher_accounts') . " WHERE user_id=?";
+    $query = "SELECT * FROM " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . " WHERE user_id=?";
 	$sql = $rcmail->db->query($query, $user_id);
     while($account = $rcmail->db->fetch_assoc($sql))
       $accounts[] = $account;
@@ -666,8 +666,8 @@ function add_do(){
 	function delete_do(){
 		$rcmail = $this->rcmail;
 		$user_id = $this->rcmail->user->data['user_id'];  
-		$pop3fetcher_id = get_input_value('_pop3fetcher_id', RCUBE_INPUT_POST);
-		$query = "DELETE FROM " . get_table_name('pop3fetcher_accounts') . " WHERE user_id=? and pop3fetcher_id=?";
+		$pop3fetcher_id = rcube_utils::get_input_value('_pop3fetcher_id', RCUBE_INPUT_POST);
+		$query = "DELETE FROM " . rcmail::get_instance()->db->table_name('pop3fetcher_accounts') . " WHERE user_id=? and pop3fetcher_id=?";
 		$sql = $rcmail->db->query($query, $user_id, $pop3fetcher_id);
 		$this->rcmail->output->command('plugin.delete_do_ok', Array());
 		$this->rcmail->output->send('plugin');
