@@ -5,3 +5,10 @@
 
 	//Auto check the new version (disabled by default)
 	$config['automatically_check_for_updates'] = false;
+
+	//Fetch method, can be 'cron', 'refesh', 'folder' or array
+	//For cron, simply add cron to file /pop3fetcher/cronjob/synchronise.php
+	//Refresh is hooked when invoked by RC
+	//Folder is invoked when one linked folder is clicked on list
+	//If array, you can set multiple methods
+	$config['synch_method'] = array('refesh', 'folder');
