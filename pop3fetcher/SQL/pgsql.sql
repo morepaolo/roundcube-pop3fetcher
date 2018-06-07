@@ -11,7 +11,7 @@ CREATE TABLE  pop3fetcher_accounts (
   pop3fetcher_id BIGINT DEFAULT nextval('pop3fetcher_seq'::text) PRIMARY KEY,
   pop3fetcher_email varchar(128) NOT NULL,
   pop3fetcher_username varchar(128) NOT NULL,
-  pop3fetcher_password varchar(128) NOT NULL,
+  pop3fetcher_password varchar(255) NOT NULL,
   pop3fetcher_serveraddress varchar(128) NOT NULL,
   pop3fetcher_serverport varchar(128) NOT NULL,
   pop3fetcher_ssl varchar(10) DEFAULT '0',
