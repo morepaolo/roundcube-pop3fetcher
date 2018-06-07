@@ -4,7 +4,7 @@ CREATE TABLE  'pop3fetcher_accounts' (
 	  `pop3fetcher_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 	  `pop3fetcher_email` VARCHAR(128) NOT NULL,
 	  `pop3fetcher_username` VARCHAR(128) NOT NULL,
-	  `pop3fetcher_password` VARCHAR(128) NOT NULL,
+	  `pop3fetcher_password` VARCHAR(255) NOT NULL,
 	  `pop3fetcher_serveraddress` VARCHAR(128) NOT NULL,
 	  `pop3fetcher_serverport` VARCHAR(128) NOT NULL,
 	  `pop3fetcher_ssl` VARCHAR(10) DEFAULT '0',
