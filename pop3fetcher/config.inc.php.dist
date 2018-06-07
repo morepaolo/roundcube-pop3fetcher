@@ -1,0 +1,7 @@
+<?php
+	//Give your custom key for crypt your password
+	$config['pop3fetcher_crypt_key'] = "32chars_key";
+	$config['pop3fetcher_iv_key'] = "16chars_key";
+
+	//Auto check the new version (disabled by default)
+	$config['automatically_check_for_updates'] = false;
