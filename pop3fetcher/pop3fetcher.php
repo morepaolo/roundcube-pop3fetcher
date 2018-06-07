@@ -38,6 +38,9 @@ class pop3fetcher extends rcube_plugin
 	private $pop;
 	private $crypt_key;
 	private $iv_key;
+	private $synch_method;
+	private $sync_refresh = false;
+	private $sync_folder = false;
 
 	private function _decrypt_pass($pass) {
 		$p = base64_decode($pass);
@@ -78,9 +81,20 @@ class pop3fetcher extends rcube_plugin
 		$this->iv_key = $this->rcmail->config->get("pop3fetcher_iv_key", "W^2fRG7.&!_XxGQ><}fE");
 		require_once __DIR__ . '/pop3fetcher_encrypt.php';
 
+		$this->synch_method = $this->rcmail->config->get("pop3fetcher_crypt_key", array("refresh", "folder"));
+		if($this->synch_method="refresh"||(is_array($this->synch_method, "refresh")&&in_array($this->synch_method)))
+			$this->sync_refresh = true;
+		if($this->synch_method="folder"||(is_array($this->synch_method, "folder")&&in_array($this->synch_method)))
+			$this->synch_folder = true;
+
 		// ADDED A CHECK ON ACTION "refresh", used since Roundcube 9.X
 		//?_task=mail&_action=list&_refresh=1&_mbox=INBOX&_page=1&_remote=1
-		if($_GET['_action']=='check-recent'||$_GET['_action']=='plugin.checkunread'||$_GET['_action']=='refresh'||($_GET['_action']=='list'&&$_GET['_refresh']==1)){
+		if(
+			$_GET['_action']=='check-recent' ||
+			$_GET['_action']=='plugin.checkunread' ||
+			($this->sync_refresh&&$_GET['_task']=='mail'&&$_GET['_action']=='refresh') ||
+			($this->synch_folder&&$_GET['_action']=='list'&&$_GET['_refresh']==1)
+			){
 			define('DISPLAY_XPM4_ERRORS', false); // display XPM4 errors
 			// path to 'POP3.php' file from XPM4 package
 			require_once './plugins/pop3fetcher/XPM4/POP35.php';
@@ -95,6 +109,7 @@ class pop3fetcher extends rcube_plugin
 			$temparr = array();
 
 			foreach($accounts as $key => $val){
+				if($this->synch_folder && $_GET['_mbox']!=$val['default_folder']) continue;
 				$temparr[$key] = $val['pop3fetcher_email'];
 				if($this->config["debug"]) write_log("pop3fetcher.txt", "INTERCEPT: task mail, checkunread for ".$val['pop3fetcher_email']);
 				// SCARICO I MESSAGGI DAL POP3
