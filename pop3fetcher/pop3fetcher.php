@@ -82,9 +82,9 @@ class pop3fetcher extends rcube_plugin
 		require_once __DIR__ . '/pop3fetcher_encrypt.php';
 
 		$this->synch_method = $this->rcmail->config->get("pop3fetcher_crypt_key", array("refresh", "folder"));
-		if($this->synch_method="refresh"||(is_array($this->synch_method, "refresh")&&in_array($this->synch_method)))
+		if($this->synch_method="refresh"||(is_array($this->synch_method, "refresh")&&in_array("refresh", $this->synch_method)))
 			$this->sync_refresh = true;
-		if($this->synch_method="folder"||(is_array($this->synch_method, "folder")&&in_array($this->synch_method)))
+		if($this->synch_method="folder"||(is_array($this->synch_method, "folder")&&in_array("folder", $this->synch_method)))
 			$this->synch_folder = true;
 
 		// ADDED A CHECK ON ACTION "refresh", used since Roundcube 9.X
