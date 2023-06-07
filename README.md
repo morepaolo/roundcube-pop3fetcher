@@ -1,3 +1,7 @@
+Fork by gloony
+==========================
+Add compatibility for RC 1.3 and crypt the password with OpenSSL
+
 roundcube-pop3fetcher v1.9.1
 ==========================
 

@@ -1,9 +1,9 @@
-DROP TABLE IF EXISTS `#REPLACE_WITH_YOUR_DB_NAME#`.`pop3fetcher_accounts`;
-CREATE TABLE  `#REPLACE_WITH_YOUR_DB_NAME#`.`pop3fetcher_accounts` (
+DROP TABLE IF EXISTS `pop3fetcher_accounts`;
+CREATE TABLE  `pop3fetcher_accounts` (
   `pop3fetcher_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `pop3fetcher_email` varchar(128) NOT NULL,
   `pop3fetcher_username` varchar(128) NOT NULL,
-  `pop3fetcher_password` varchar(128) NOT NULL,
+  `pop3fetcher_password` varchar(255) NOT NULL,
   `pop3fetcher_serveraddress` varchar(128) NOT NULL,
   `pop3fetcher_serverport` varchar(128) NOT NULL,
   `pop3fetcher_ssl` varchar(10) DEFAULT '0',
